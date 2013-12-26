@@ -68,5 +68,47 @@ s16 MoveAve_WMA(s16 NewData, s16 *MoveAve_FIFO, u8 SampleNum)
 **=====================================================================================================*/
 /*=====================================================================================================*/
 
+void ring_buf_write(int16_t new_data, int16_t *buf, uint16_t len)
+{
+	int16_t i = 0;
+	for( i = 1; i < len; i++)
+		buf[i] = buf[i-1];
+	buf[0] = new_data;
+}
 /*=====================================================================================================*/
 /*=====================================================================================================*/
+int16_t mov_avg_filter(int16_t new_data, mov_avg_filter_params *p, int16_t *ring_buf)
+{
+	int16_t sum, i;
+	ring_buf_write(new_data, ring_buf, p->window_size);
+	p->cnt += 1;
+
+	if( p->cnt <= p->window_size ){
+		/*doesn't have enough samples*/
+		
+		for ( i = 0 ; i < p->cnt ; i++)
+			sum += ring_buf[i];
+
+		p->avg = sum/p->cnt;
+
+		return 1;
+
+	} else if ( p->cnt > p->window_size){
+		/*have enough samples*/
+		for ( i = 0 ; i < p->window_size ; i++)
+			sum += ring_buf[i];
+
+		p->avg = sum/p->window_size;
+
+		return 1;
+
+	} else {
+
+		return 0;
+	}
+
+	
+
+	
+
+}

@@ -13,6 +13,7 @@
 #include "test.h"
 /*=====================================================================================================*/
 #define PRINT_DEBUG(var1) printf("DEBUG PRINT"#var1"\r\n")
+extern volatile int16_t ACC_FIFO[3][256];
 /*=====================================================================================================*/
 void set_nvic()
 {
@@ -116,11 +117,13 @@ int main(void)
 		global_var[PID_ROLL].param,
 		global_var[PID_PITCH].param,
 		global_var[PID_YAW].param);
-	printf("MOTOR 1,%f,MOTOR 2,%f,MOTOR 3,%f,MOTOR 4,%f",
+	printf("MOTOR 1,%f,MOTOR 2,%f,MOTOR 3,%f,MOTOR 4,%f\r\n",
 		global_var[MOTOR1].param,
 		global_var[MOTOR2].param,
 		global_var[MOTOR3].param,
 		global_var[MOTOR4].param);
+	printf("ACC_FIFO[0][0],%d,ACC_FIFO[1][0],%d,ACC_FIFO[2][0],%d\r\n",
+		ACC_FIFO[0][0],ACC_FIFO[1][0],ACC_FIFO[2][0]);
 	Delay_10ms(20);	
 		
 	}
