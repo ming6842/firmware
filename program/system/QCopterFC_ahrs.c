@@ -7,10 +7,11 @@
 #define Ki 0.020f//0.02f
 /*=====================================================================================================*/
 /*=====================================================================================================*/
-static float True_R, R, inv_R, N_Ax_g, N_Ay_g, N_Az_g, 
+float True_R, R, inv_R, N_Ax_g, N_Ay_g, N_Az_g, 
 		Gyro_AngX, Gyro_AngY, Gyro_AngZ,
 		Gyro_Rx, Gyro_Ry, Gyro_Rz,
-		True_Rx, True_Ry, True_Rz;
+		True_Rx, True_Ry, True_Rz,
+		ACOS;
 void AHRS_Init(Quaternion *pNumQ, EulerAngle *pAngE)
 {
 	pNumQ->q0 = 1.0f;
@@ -21,9 +22,21 @@ void AHRS_Init(Quaternion *pNumQ, EulerAngle *pAngE)
 	pAngE->Pitch = 0.0f;
 	pAngE->Roll  = 0.0f;
 	pAngE->Yaw   = 0.0f;
-	True_Rx=0;
-	True_Ry=0;
-	True_Rz=0;
+	True_R = 0.0;
+	R = 0.0;
+	True_Rx= 0.0;
+	True_Ry= 0.0;
+	True_Rz= 0.0;
+	N_Ax_g = 0.0;
+	N_Ay_g = 0.0;
+	N_Az_g = 0.0;
+	Gyro_AngX = 0.0;
+	Gyro_AngY = 0.0;
+	Gyro_AngZ = 0.0;
+	Gyro_Rx = 0.0;
+	Gyro_Ry = 0.0;
+	Gyro_Rz=0.0;
+
 }
 /*=====================================================================================================*/
 /*=====================================================================================================*/
@@ -127,13 +140,14 @@ void ahrs_complementary_filter()
 	
 	R = sqrtf(Acc.TrueX*Acc.TrueX+Acc.TrueY*Acc.TrueY+Acc.TrueZ*Acc.TrueZ);
 	inv_R=1.0/R;
-	N_Ax_g=(-Acc.TrueX)*inv_R;
+	N_Ax_g=(Acc.TrueX)*inv_R;
+
 	N_Ay_g=Acc.TrueY*inv_R;
 	N_Az_g=Acc.TrueZ*inv_R;
 
-	Gyro_AngX = (Gyr.TrueX) * 0.002; //*3.232238159179688
-	Gyro_AngY = (Gyr.TrueY) * 0.002;
-	Gyro_AngZ = (Gyr.TrueZ) * 0.002;
+	Gyro_AngX = (Gyr.TrueX) * 0.002 * 0.0174444545234626; //*3.232238159179688
+	Gyro_AngY = (Gyr.TrueY) * 0.002 * 0.0174444545234626;
+	Gyro_AngZ = (Gyr.TrueZ) * 0.002 * 0.0174444545234626;
 
 
 
@@ -154,16 +168,16 @@ void ahrs_complementary_filter()
 	True_Ry = True_Ry-True_Rx*Gyro_AngZ;
 	True_Rx = True_Ry*Gyro_AngZ+True_Rx;
 	
-	True_Rz = True_Ry*Gyro_AngY+True_Rz;
-	True_Ry = True_Ry-True_Rz*Gyro_AngY;
+	True_Rz = True_Ry*Gyro_AngX+True_Rz;
+	True_Ry = True_Ry-True_Rz*Gyro_AngX;
 
-	True_Rz = True_Rx*Gyro_AngX+True_Rz;
-	True_Rx = True_Rx-True_Rz*Gyro_AngX;
+	True_Rz = True_Rx*Gyro_AngY+True_Rz;
+	True_Rx = True_Rx-True_Rz*Gyro_AngY;
 
 	Gyro_Rx=True_Rx;
 	Gyro_Ry=True_Ry;
 	Gyro_Rz=True_Rz;
-	#define ComplementAlpha 0.25
+	#define ComplementAlpha 0.0014
 	True_Rx = (1.0-ComplementAlpha)*(Gyro_Rx)+ComplementAlpha*(N_Ax_g);
 	True_Ry = (1.0-ComplementAlpha)*(Gyro_Ry)+ComplementAlpha*(N_Ay_g);
 	True_Rz = (1.0-ComplementAlpha)*(Gyro_Rz)+ComplementAlpha*(N_Az_g);
@@ -189,14 +203,15 @@ void ahrs_complementary_filter()
 
 //  Using corrected equation
 
-	AngE.Pitch=-atan(True_Ry/True_Rz)*57.2957795;
+	AngE.Roll=atanf(True_Ry/True_Rz)*57.2957795;
 
 
+	ACOS = (True_Rx)/True_R;
 
-	AngE.Roll=acos(abs(True_Rx)/True_R)*57.2957795-90.0;
+	AngE.Pitch=acosf(ACOS )*57.2957795-90.0;
 		if(True_Rx<0){
 
-			AngE.Roll= -AngE.Roll;
+			AngE.Pitch= AngE.Pitch;
 		}
 
 
