@@ -7,6 +7,10 @@
 #define Ki 0.020f//0.02f
 /*=====================================================================================================*/
 /*=====================================================================================================*/
+static float True_R, R, inv_R, N_Ax_g, N_Ay_g, N_Az_g, 
+		Gyro_AngX, Gyro_AngY, Gyro_AngZ,
+		Gyro_Rx, Gyro_Ry, Gyro_Rz,
+		True_Rx, True_Ry, True_Rz;
 void AHRS_Init(Quaternion *pNumQ, EulerAngle *pAngE)
 {
 	pNumQ->q0 = 1.0f;
@@ -17,6 +21,9 @@ void AHRS_Init(Quaternion *pNumQ, EulerAngle *pAngE)
 	pAngE->Pitch = 0.0f;
 	pAngE->Roll  = 0.0f;
 	pAngE->Yaw   = 0.0f;
+	True_Rx=0;
+	True_Ry=0;
+	True_Rz=0;
 }
 /*=====================================================================================================*/
 /*=====================================================================================================*/
@@ -115,3 +122,82 @@ void AHRS_Update(void)
 }
 /*=====================================================================================================*/
 /*=====================================================================================================*/
+void ahrs_complementary_filter()
+{
+	
+	R = sqrtf(Acc.TrueX*Acc.TrueX+Acc.TrueY*Acc.TrueY+Acc.TrueZ*Acc.TrueZ);
+	inv_R=1.0/R;
+	N_Ax_g=(-Acc.TrueX)*inv_R;
+	N_Ay_g=Acc.TrueY*inv_R;
+	N_Az_g=Acc.TrueZ*inv_R;
+
+	Gyro_AngX = (Gyr.TrueX) * 0.002; //*3.232238159179688
+	Gyro_AngY = (Gyr.TrueY) * 0.002;
+	Gyro_AngZ = (Gyr.TrueZ) * 0.002;
+
+
+
+//output_high(PIN_F6);
+/*
+	True_Ry = True_Ry*cos(Gyro_AngZ)-True_Rx*sin(Gyro_AngZ);
+	True_Rx = True_Ry*sin(Gyro_AngZ)+True_Rx*cos(Gyro_AngZ);
+	
+	True_Rz = True_Ry*sin(Gyro_AngY)+True_Rz*cos(Gyro_AngY);
+	True_Ry = True_Ry*cos(Gyro_AngY)-True_Rz*sin(Gyro_AngY);
+
+	True_Rz = True_Rx*sin(Gyro_AngX)+True_Rz*cos(Gyro_AngX);
+	True_Rx = True_Rx*cos(Gyro_AngX)-True_Rz*sin(Gyro_AngX);
+
+*/
+//output_low(PIN_F6);
+
+	True_Ry = True_Ry-True_Rx*Gyro_AngZ;
+	True_Rx = True_Ry*Gyro_AngZ+True_Rx;
+	
+	True_Rz = True_Ry*Gyro_AngY+True_Rz;
+	True_Ry = True_Ry-True_Rz*Gyro_AngY;
+
+	True_Rz = True_Rx*Gyro_AngX+True_Rz;
+	True_Rx = True_Rx-True_Rz*Gyro_AngX;
+
+	Gyro_Rx=True_Rx;
+	Gyro_Ry=True_Ry;
+	Gyro_Rz=True_Rz;
+	#define ComplementAlpha 0.25
+	True_Rx = (1.0-ComplementAlpha)*(Gyro_Rx)+ComplementAlpha*(N_Ax_g);
+	True_Ry = (1.0-ComplementAlpha)*(Gyro_Ry)+ComplementAlpha*(N_Ay_g);
+	True_Rz = (1.0-ComplementAlpha)*(Gyro_Rz)+ComplementAlpha*(N_Az_g);
+
+	True_R=sqrtf(True_Rx*True_Rx+True_Ry*True_Ry+True_Rz*True_Rz);
+	True_Rx=True_Rx/True_R;
+	True_Ry=True_Ry/True_R;
+	True_Rz=True_Rz/True_R;
+
+/*
+	True_AngX=acos(abs(True_Rx)/True_R)*57.32484076433121-90.0;
+		if(True_Rx<0){
+
+			True_AngX= -True_AngX;
+		}
+
+	True_AngY=acos(abs(True_Ry)/True_R)*57.32484076433121-90.0;
+		if(True_Ry<0){
+
+			True_AngY= -True_AngY;
+		}
+*/
+
+//  Using corrected equation
+
+	AngE.Pitch=-atan(True_Ry/True_Rz)*57.2957795;
+
+
+
+	AngE.Roll=acos(abs(True_Rx)/True_R)*57.2957795-90.0;
+		if(True_Rx<0){
+
+			AngE.Roll= -AngE.Roll;
+		}
+
+
+}
