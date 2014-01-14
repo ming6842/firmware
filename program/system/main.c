@@ -15,7 +15,11 @@ volatile uint32_t Correction_Time = 0;
 
 Sensor_Mode SensorMode = Mode_GyrCorrect;
 extern SYSTEM_STATUS sys_status;
-
+extern float True_R, R, inv_R, N_Ax_g, N_Ay_g, N_Az_g, 
+		Gyro_AngX, Gyro_AngY, Gyro_AngZ,
+		Gyro_Rx, Gyro_Ry, Gyro_Rz,
+		True_Rx, True_Ry, True_Rz,
+		ACOS;
 /*=====================================================================================================*/
 #define PRINT_DEBUG(var1) printf("DEBUG PRINT"#var1"\r\n")
 /*=====================================================================================================*/
@@ -223,27 +227,27 @@ void flightControl_task()
 			Acc.X = (s16)MoveAve_WMA(Acc.X, ACC_FIFO[0], 8);
 			Acc.Y = (s16)MoveAve_WMA(Acc.Y, ACC_FIFO[1], 8);
 			Acc.Z = (s16)MoveAve_WMA(Acc.Z, ACC_FIFO[2], 8);
-			Gyr.X = (s16)MoveAve_WMA(Gyr.X, GYR_FIFO[0], 8);
-			Gyr.Y = (s16)MoveAve_WMA(Gyr.Y, GYR_FIFO[1], 8);
-			Gyr.Z = (s16)MoveAve_WMA(Gyr.Z, GYR_FIFO[2], 8);
+			// Gyr.X = (s16)MoveAve_WMA(Gyr.X, GYR_FIFO[0], 8);
+			// Gyr.Y = (s16)MoveAve_WMA(Gyr.Y, GYR_FIFO[1], 8);
+			// Gyr.Z = (s16)MoveAve_WMA(Gyr.Z, GYR_FIFO[2], 8);
 			Mag.X = (s16)MoveAve_WMA(Mag.X, MAG_FIFO[0], 64);
 			Mag.Y = (s16)MoveAve_WMA(Mag.Y, MAG_FIFO[1], 64);
 			Mag.Z = (s16)MoveAve_WMA(Mag.Z, MAG_FIFO[2], 64);
 
 			/* To Physical */
-			Acc.TrueX = Acc.X * MPU9150A_4g;      // g/LSB
+			Acc.TrueX = -Acc.X * MPU9150A_4g;      // g/LSB
 			Acc.TrueY = Acc.Y * MPU9150A_4g;      // g/LSB
 			Acc.TrueZ = Acc.Z * MPU9150A_4g;      // g/LSB
-			Gyr.TrueX = Gyr.X * MPU9150G_2000dps; // dps/LSB
-			Gyr.TrueY = Gyr.Y * MPU9150G_2000dps; // dps/LSB
-			Gyr.TrueZ = Gyr.Z * MPU9150G_2000dps; // dps/LSB
+			Gyr.TrueX = -Gyr.X * MPU9150G_2000dps; // dps/LSB
+			Gyr.TrueY = -Gyr.Y * MPU9150G_2000dps; // dps/LSB
+			Gyr.TrueZ = -Gyr.Z * MPU9150G_2000dps; // dps/LSB
 			Mag.TrueX = Mag.X * MPU9150M_1200uT;  // uT/LSB
 			Mag.TrueY = Mag.Y * MPU9150M_1200uT;  // uT/LSB
 			Mag.TrueZ = Mag.Z * MPU9150M_1200uT;  // uT/LSB
 			Temp.TrueT = Temp.T * MPU9150T_85degC; // degC/LSB
 
 			/* Get Attitude Angle */
-			AHRS_Update();
+			ahrs_complementary_filter();
 			global_var[TRUE_ROLL].param = AngE.Roll;
 			global_var[TRUE_PITCH].param = AngE.Pitch;
 			global_var[TRUE_YAW].param = AngE.Yaw;
@@ -313,12 +317,21 @@ void statusReport_task()
 
 	while (1) {
 
+		printf("N_Ax_g:%f, N_Ay_g:%f, N_Az_g:%f",
+			N_Ax_g, N_Ay_g, N_Az_g);
+		// printf("Gyro_AngX:%f, Gyro_AngY:%f, Gyro_AngZ:%f\r\n",
+		// 	Gyro_AngX, Gyro_AngY, Gyro_AngZ);
+		// printf("Gyro_Rx:%f, Gyro_Ry:%f, Gyro_Rz:%f\r\n",Gyro_Rx, Gyro_Ry, Gyro_Rz);
+		printf("True_Rx:%f,True_Ry:%f, True_Rz:%f ",
+			True_Rx, True_Ry, True_Rz);
+			
+		printf("ACOS: %f \r\n",
+		 	ACOS);
 
 
 
 
-
-		vTaskDelay(100);
+		vTaskDelay(500);
 	}
 }
 
@@ -392,7 +405,7 @@ int main(void)
 
 
 #if configSTATUS_SHELL
-	xTaskCreate(shell_task,
+	xTaskCreate(statusReport_task,
 		    (signed portCHAR *) "Shell",
 		    2048, NULL,
 		    tskIDLE_PRIORITY + 5, NULL);
