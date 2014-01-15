@@ -203,16 +203,21 @@ void ahrs_complementary_filter()
 
 //  Using corrected equation
 
-	AngE.Roll=atanf(True_Ry/True_Rz)*57.2957795;
+	AngE.Roll=atan2f(True_Ry, True_Rz)*57.2957795;
 
 
-	ACOS = (True_Rx)/True_R;
+	ACOS = fabsf(True_Rx)/True_R;
 
-	AngE.Pitch=acosf(ACOS )*57.2957795-90.0;
-		if(True_Rx<0){
+	AngE.Pitch = 90.0 - acosf(ACOS )*57.2957795;
+	if ( (True_Rx < 0) && (True_Rz < 0) ) {
 
-			AngE.Pitch= AngE.Pitch;
-		}
+		AngE.Pitch = AngE.Pitch + 90 ;		
+	} else if ( (True_Rx > 0) && (True_Rz > 0)  ) {
+
+		AngE.Pitch = -AngE.Pitch;
+	} else if ( (True_Rx > 0) && (True_Rz < 0) ) {
+		AngE.Pitch = -90 - AngE.Pitch;
+	}
 
 
 }
