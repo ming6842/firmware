@@ -238,7 +238,7 @@ void flightControl_task()
 			Acc.TrueX = -Acc.X * MPU9150A_4g;      // g/LSB
 			Acc.TrueY = Acc.Y * MPU9150A_4g;      // g/LSB
 			Acc.TrueZ = Acc.Z * MPU9150A_4g;      // g/LSB
-			Gyr.TrueX = -Gyr.X * MPU9150G_2000dps; // dps/LSB
+			Gyr.TrueX = Gyr.X * MPU9150G_2000dps; // dps/LSB
 			Gyr.TrueY = -Gyr.Y * MPU9150G_2000dps; // dps/LSB
 			Gyr.TrueZ = -Gyr.Z * MPU9150G_2000dps; // dps/LSB
 			Mag.TrueX = Mag.X * MPU9150M_1200uT;  // uT/LSB
