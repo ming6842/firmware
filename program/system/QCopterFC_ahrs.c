@@ -144,26 +144,10 @@ void ahrs_complementary_filter()
 
 	N_Ay_g=Acc.TrueY*inv_R;
 	N_Az_g=Acc.TrueZ*inv_R;
-
-	Gyro_AngX = (Gyr.TrueX) * 0.002 * 0.0174444545234626; //*3.232238159179688
-	Gyro_AngY = (Gyr.TrueY) * 0.002 * 0.0174444545234626;
-	Gyro_AngZ = (Gyr.TrueZ) * 0.002 * 0.0174444545234626;
-
-
-
-//output_high(PIN_F6);
-/*
-	True_Ry = True_Ry*cos(Gyro_AngZ)-True_Rx*sin(Gyro_AngZ);
-	True_Rx = True_Ry*sin(Gyro_AngZ)+True_Rx*cos(Gyro_AngZ);
-	
-	True_Rz = True_Ry*sin(Gyro_AngY)+True_Rz*cos(Gyro_AngY);
-	True_Ry = True_Ry*cos(Gyro_AngY)-True_Rz*sin(Gyro_AngY);
-
-	True_Rz = True_Rx*sin(Gyro_AngX)+True_Rz*cos(Gyro_AngX);
-	True_Rx = True_Rx*cos(Gyro_AngX)-True_Rz*sin(Gyro_AngX);
-
-*/
-//output_low(PIN_F6);
+	#define DELTA_T 0.002
+	Gyro_AngX = toRad( (Gyr.TrueX) * DELTA_T ); //*3.232238159179688
+	Gyro_AngY = toRad( (Gyr.TrueY) * DELTA_T );
+	Gyro_AngZ = toRad( (Gyr.TrueZ) * DELTA_T );
 
 	True_Ry = True_Ry-True_Rx*Gyro_AngZ;
 	True_Rx = True_Ry*Gyro_AngZ+True_Rx;
@@ -177,38 +161,24 @@ void ahrs_complementary_filter()
 	Gyro_Rx=True_Rx;
 	Gyro_Ry=True_Ry;
 	Gyro_Rz=True_Rz;
-	#define ComplementAlpha 0.0014
-	True_Rx = (1.0-ComplementAlpha)*(Gyro_Rx)+ComplementAlpha*(N_Ax_g);
-	True_Ry = (1.0-ComplementAlpha)*(Gyro_Ry)+ComplementAlpha*(N_Ay_g);
-	True_Rz = (1.0-ComplementAlpha)*(Gyro_Rz)+ComplementAlpha*(N_Az_g);
+	#define COMPLEMENTARY_ALPHA 0.0014
+	True_Rx = (1.0-COMPLEMENTARY_ALPHA) * Gyro_Rx + COMPLEMENTARY_ALPHA * N_Ax_g;
+	True_Ry = (1.0-COMPLEMENTARY_ALPHA) * Gyro_Ry + COMPLEMENTARY_ALPHA * N_Ay_g;
+	True_Rz = (1.0-COMPLEMENTARY_ALPHA) * Gyro_Rz + COMPLEMENTARY_ALPHA * N_Az_g;
 
 	True_R=sqrtf(True_Rx*True_Rx+True_Ry*True_Ry+True_Rz*True_Rz);
 	True_Rx=True_Rx/True_R;
 	True_Ry=True_Ry/True_R;
 	True_Rz=True_Rz/True_R;
 
-/*
-	True_AngX=acos(abs(True_Rx)/True_R)*57.32484076433121-90.0;
-		if(True_Rx<0){
-
-			True_AngX= -True_AngX;
-		}
-
-	True_AngY=acos(abs(True_Ry)/True_R)*57.32484076433121-90.0;
-		if(True_Ry<0){
-
-			True_AngY= -True_AngY;
-		}
-*/
-
 //  Using corrected equation
 
-	AngE.Roll=atan2f(True_Ry, True_Rz)*57.2957795;
+	AngE.Roll = toDeg( atan2f(True_Ry, True_Rz) ) ;
 
 
 	ACOS = fabsf(True_Rx)/True_R;
 
-	AngE.Pitch = 90.0 - acosf(ACOS )*57.2957795;
+	AngE.Pitch = 90.0 - toDeg( acosf(ACOS ) );
 	if ( (True_Rx < 0) && (True_Rz < 0) ) {
 
 		AngE.Pitch = AngE.Pitch + 90 ;		
