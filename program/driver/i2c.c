@@ -289,7 +289,7 @@ u32 I2C_WriteBytes(volatile u8 SlaveAddr, volatile u8 *WriteBuf, volatile u8 Num
 **使用 : I2C_DMA_Read(SlaveAddr, ReadAddr, ReadBuf, NumByte);
 **=====================================================================================================*/
 /*=====================================================================================================*/
-u32 I2C_DMA_ReadReg(volatile u8 SlaveAddr, volatile u8 ReadAddr, volatile u8 *ReadBuf, u8 NumByte)
+u32 I2C_DMA_ReadReg(volatile u8 SlaveAddr, volatile u8 ReadAddr, volatile u8 *ReadBuf, volatile u8 NumByte)
 {
 	I2C_ReadPtr = &NumByte;
 
@@ -399,7 +399,7 @@ u32 I2C_DMA_ReadReg(volatile u8 SlaveAddr, volatile u8 ReadAddr, volatile u8 *Re
 **使用 : I2C_DMA_Write(SlaveAddr, WriteAddr, WriteBuf, NumByte);
 **=====================================================================================================*/
 /*=====================================================================================================*/
-u32 I2C_DMA_WriteReg(volatile u8 SlaveAddr, volatile u8 WriteAddr, volatile u8 *WriteBuf, u8 NumByte)
+u32 I2C_DMA_WriteReg(volatile u8 SlaveAddr, volatile u8 WriteAddr, volatile u8 *WriteBuf, volatile u8 NumByte)
 {
 	I2C_WritePtr = &NumByte;
 

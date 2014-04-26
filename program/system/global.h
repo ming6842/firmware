@@ -51,7 +51,7 @@ typedef struct  {
 	__IO float value;
 } global_t;
 
-typedef struct {
+typedef volatile struct {
 	global_t *variable;
 	int var_count;
 	status_t status;

@@ -86,7 +86,7 @@ void correction_task()
 	while (sensor_correct == ERROR) {
 
 		while (SensorMode != Mode_Algorithm) {
-			uint8_t IMU_Buf[20] = {0};
+			volatile uint8_t IMU_Buf[20] = {0};
 
 			static uint8_t BaroCnt = 0;
 

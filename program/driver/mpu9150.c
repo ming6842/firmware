@@ -13,8 +13,8 @@
 u8 MPU9150_Init(void)
 {
 	u8 i = 0;
-	u8 ReadBuf[3] = {0};
-	u8 MPU6050_Init_Data[6][2] = {
+	volatile u8 ReadBuf[3] = {0};
+	volatile u8 MPU6050_Init_Data[6][2] = {
 		{0x01, MPU6050_PWR_MGMT_1},   // Reset device
 		{0x03, MPU6050_CONFIG},       //
 		{0x18, MPU6050_GYRO_CONFIG},  // +-2000dps
@@ -22,7 +22,7 @@ u8 MPU9150_Init(void)
 		{0x32, MPU6050_INT_PIN_CFG},  //
 		{0x00, MPU6050_USER_CTRL}     //
 	};
-	u8 AK8975_Init_Data[3][2] = {
+	volatile u8 AK8975_Init_Data[3][2] = {
 		{0x0F, AK8975_CNTL},          // Set Fuse ROM access mode
 		{0x00, AK8975_CNTL},          // Set Power Down Mode
 		{0x01, AK8975_CNTL}           // Set Single Measurement Mode
@@ -73,10 +73,10 @@ u8 MPU9150_Init(void)
 **使用 : MPU9150_Read(IMU_Buf);
 **==============================================================================================*/
 /*==============================================================================================*/
-void MPU9150_Read(u8 *ReadBuf)
+void MPU9150_Read(volatile u8 *ReadBuf)
 {
-	u8 ReadData = 0x00;
-	u8 WriteData = 0x01;
+	volatile u8 ReadData = 0x00;
+	volatile u8 WriteData = 0x01;
 
 	I2C_DMA_ReadReg(MPU6050_I2C_ADDR, MPU6050_ACCEL_XOUT_H, ReadBuf, 14);
 
