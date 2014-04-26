@@ -8,10 +8,10 @@
 /*=====================================================================================================*/
 void I2C_Config(void);
 
-u32 I2C_ReadBytes(u8 SlaveAddr, u8 *ReadBuf, u8 NumByte);
-u32 I2C_WriteBytes(u8 SlaveAddr, u8 *WriteBuf, u8 NumByte);
-u32 I2C_DMA_ReadReg(u8 SlaveAddr, u8 ReadAddr, u8 *ReadBuf, u8 NumByte);
-u32 I2C_DMA_WriteReg(u8 SlaveAddr, u8 WriteAddr, u8 *WriteBuf, u8 NumByte);
+u32 I2C_ReadBytes(volatile u8 SlaveAddr, volatile u8 *ReadBuf, u8 NumByte);
+u32 I2C_WriteBytes(volatile u8 SlaveAddr, volatile u8 *WriteBuf, u8 NumByte);
+u32 I2C_DMA_ReadReg(volatile u8 SlaveAddr, volatile u8 ReadAddr, volatile u8 *ReadBuf, u8 NumByte);
+u32 I2C_DMA_WriteReg(volatile u8 SlaveAddr, volatile u8 WriteAddr, volatile u8 *WriteBuf, u8 NumByte);
 
 u32 I2C_TimeOut(void);
 
