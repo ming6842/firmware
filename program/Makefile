@@ -11,7 +11,7 @@ OBJCOPY=arm-none-eabi-objcopy
 GDB=arm-none-eabi-gdb
 
 #============================================================================#
-
+CFLAGS_OPT = -O1 
 CFLAGS=-g -mlittle-endian -mthumb
 CFLAGS+=-mcpu=cortex-m4
 CFLAGS+=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
@@ -143,11 +143,11 @@ $(BIN_IMAGE):$(EXECUTABLE)
 STARTUP_OBJ = startup_stm32f4xx.o
 
 $(STARTUP_OBJ): $(STARTUP)
-	@$(CC) $(CFLAGS) $^ -c $(STARTUP)
+	@$(CC) $(CFLAGS) $(CFLAGS_OPT) $^ -c $(STARTUP)
 	@echo '    CC $(STARTUP_OBJ)'
 
 $(EXECUTABLE):$(SRC) $(STARTUP_OBJ)
-	@$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	@$(CC) $(CFLAGS) $(CFLAGS_OPT) $^ -o $@ $(LDFLAGS)
 	@echo '    CC $(EXECUTABLE)'
 
 #Make clean
