@@ -136,10 +136,11 @@ SRC+=$(FATFS)/diskio.c \
 	$(FATFS)/syscall.c \
 	$(FATFS)/unicode.c \
 
+SIM_SRC=./simulator/mavlink_udp.c 
 #============================================================================#
 
 #Make all
-all:$(BIN_IMAGE)
+all:$(BIN_IMAGE) mavlink_udp
 
 $(BIN_IMAGE):$(EXECUTABLE)
 	@$(OBJCOPY) -O binary $^ $@
@@ -154,13 +155,15 @@ $(STARTUP_OBJ): $(STARTUP)
 $(EXECUTABLE):$(SRC) $(STARTUP_OBJ)
 	@$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 	@echo '    CC $(EXECUTABLE)'
-
+	
+mavlink_udp:
+	gcc -I $(MAVLINK)/common -o $@ $(SIM_SRC)
 #Make clean
 clean:
 	rm -rf $(STARTUP_OBJ)
 	rm -rf $(EXECUTABLE)
 	rm -rf $(BIN_IMAGE)
-
+	rm -rf mavlink_udp
 #Make flash
 flash:
 	st-flash write $(BIN_IMAGE) 0x8000000
