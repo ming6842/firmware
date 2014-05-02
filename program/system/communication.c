@@ -5,37 +5,42 @@
 #include "mavlink.h"
 
 #define MAV_MAX_LEN 263
+#define CMD_LEN(list) (sizeof(list) / sizeof(struct mavlink_cmd))
 
-extern xTaskHandle ground_station_handle;
+/* Mavlink message handlers */
+void mission_read_waypoint_list();
+void mission_write_waypoint_list();
+void mission_clear_waypoint();
+void mission_set_new_current_waypoint();
 
 mavlink_message_t received_msg;
 mavlink_status_t received_status;
 
-void generate_package(IMU_package *package, uint8_t *buf)
-{
-	memcpy(&buf[0], &((package->roll)), sizeof(int16_t));
-	memcpy(&buf[2], &((package->pitch)), sizeof(int16_t));
-	memcpy(&buf[4], &((package->yaw)), sizeof(int16_t));
-	memcpy(&buf[6], &((package->acc_x)), sizeof(int16_t));
-	memcpy(&buf[8], &((package->acc_y)), sizeof(int16_t));
-	memcpy(&buf[10], &((package->acc_z)), sizeof(int16_t));
-	memcpy(&buf[12], &((package->gyro_x)), sizeof(int16_t));
-	memcpy(&buf[14], &((package->gyro_y)), sizeof(int16_t));
-	memcpy(&buf[16], &((package->gyro_z)), sizeof(int16_t));
-}
+/*
+ * To handle a mavlink command, just create a function which follow the 
+ * protocol of the mavkink and fill in the message id.
+ */
+struct mavlink_cmd cmd_list[] = {
+	/* flight mission clear command */
+	[0] = {.cmd_handler = mission_read_waypoint_list, .msgid = 43},
+	[1] = {.cmd_handler = mission_write_waypoint_list, .msgid = 44},
+	[2] = {.cmd_handler = mission_clear_waypoint, .msgid = 45},
+	[3] = {.cmd_handler = mission_set_new_current_waypoint, .msgid = 42}
+};
 
-void send_package(uint8_t *buf, size_t size)
+void send_package(uint8_t *buf, mavlink_message_t *msg)
 {
+	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
+
 	int i;
-	for(i = 0; i < size; i++)
+	for(i = 0; i < len; i++)
 		serial.putc(buf[i]);
 }
 
 void send_vehicle_info()
 {
 	mavlink_message_t msg;
-	uint8_t buf[MAV_MAX_LEN] = {0};
-	uint16_t len;
+	uint8_t buf[MAV_MAX_LEN];
 
 	/* Test - QuadCopter Heart Beat */
 	mavlink_msg_heartbeat_pack(1, 200, &msg,
@@ -44,8 +49,7 @@ void send_vehicle_info()
 		MAV_MODE_GUIDED_ARMED, 
 		0, MAV_STATE_ACTIVE
 	);
-	len = mavlink_msg_to_send_buffer(buf, &msg);
-	send_package(buf, len);
+	send_package(buf, &msg);
 		
 	/* Test - Position (By GPS) */
 	mavlink_msg_global_position_int_pack(1, 220, &msg, /*time*/0,  
@@ -53,9 +57,7 @@ void send_vehicle_info()
 		100*1000, 10 * 1000, 1 * 100, 1 * 100,
 		 1 * 100, 45
 	);
-	len = mavlink_msg_to_send_buffer(buf, &msg);
-	send_package(buf, len);
-
+	send_package(buf, &msg);
 
 	/* Test - Attitude */
 	mavlink_msg_attitude_pack(1, 200, &msg, 0,
@@ -64,23 +66,33 @@ void send_vehicle_info()
 		toRad( system.variable[TRUE_YAW].value ), 
 		0.0, 0.0, 0.0
 	);
-	len = mavlink_msg_to_send_buffer(buf, &msg);
-	send_package(buf, len);
+	send_package(buf, &msg);
 
 	/* Test - Ack Message */
-	mavlink_msg_command_ack_pack(1, 200, &msg, MAV_CMD_NAV_WAYPOINT, MAV_RESULT_ACCEPTED);
-	len = mavlink_msg_to_send_buffer(buf, &msg);
-	send_package(buf, len);
+	//mavlink_msg_command_ack_pack(1, 200, &msg, MAV_CMD_NAV_WAYPOINT, MAV_RESULT_ACCEPTED);
+	//send_package(buf, &msg);
+
+
 	/* Test - Debug Message */
-	mavlink_msg_named_value_int_pack(1, 200, &msg, 0, "msg-id", received_msg.msgid);
-	len = mavlink_msg_to_send_buffer(buf, &msg);
-	send_package(buf, len);
+	//mavlink_msg_named_value_int_pack(1, 200, &msg, 0, "msg-id", received_msg.msgid);
+	//send_package(buf, &msg);
+}
+
+void parse_received_cmd(mavlink_message_t *msg)
+{
+	int i;
+	for(i = 0; i < CMD_LEN(cmd_list); i++) {
+		if(msg->msgid == cmd_list[i].msgid)
+			cmd_list[i].cmd_handler();
+	}
 }
 
 void ground_station_send_task()
 {
 	while(1) {
 		send_vehicle_info();
+
+		parse_received_cmd(&received_msg);
 	}
 }
 
