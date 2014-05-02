@@ -185,6 +185,16 @@ int main(int argc, char* argv[])
 				{
 					// Packet received
 					printf("\nReceived packet: SYS: %d, COMP: %d, LEN: %d, MSG ID: %d\n", msg.sysid, msg.compid, msg.len, msg.msgid);
+					if( msg.msgid == MAVLINK_MSG_ID_MISSION_CLEAR_ALL) {
+
+						printf("\nClear Waypoint now!\n");
+						mavlink_msg_mission_ack_pack( 1, 0, 
+							&msg, 255, 
+							0, 0);
+						len = mavlink_msg_to_send_buffer(buf, &msg);
+						bytes_sent = sendto(sock, buf, len, 0, 
+							(struct sockaddr*)&gcAddr, sizeof(struct sockaddr_in));
+					}
 				}
 			}
 			printf("\n");
