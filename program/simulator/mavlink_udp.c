@@ -56,7 +56,22 @@
 #define BUFFER_LENGTH 2041 // minimum buffer size that can be used with qnx (I don't know why)
 
 uint64_t microsSinceEpoch();
+/*
+a callback function which implement sending udp packet to grounl control
+TODO:implement it
+*/
+int udp_send_to_ground_control() {
 
+
+}
+/*
+a callback function which implement receiving udp packet from grounl control
+TODO:implement it
+*/
+int udp_receive_from_ground_control() {
+
+
+}
 int main(int argc, char* argv[])
 {
 	
@@ -134,6 +149,7 @@ int main(int argc, char* argv[])
 	
 	for (;;) 
     {
+
 		position[0]+=2;	
 		/*Send Heartbeat */
 		mavlink_msg_heartbeat_pack(1, 200, &msg, MAV_TYPE_HELICOPTER, MAV_AUTOPILOT_GENERIC, MAV_MODE_GUIDED_ARMED, 0, MAV_STATE_ACTIVE);
