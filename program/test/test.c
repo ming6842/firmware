@@ -18,7 +18,7 @@ static void test_Update_RC_Control()
 
 	Update_RC_Control( &Roll, &Pitch, &Yaw, &Thr, &safety);
 	
-	TEST_ASSERT(Roll >= MAX_CTRL_ROLL);
+	TEST_ASSERT(Roll > MAX_CTRL_ROLL);
 	TEST_ASSERT(Pitch >= MAX_CTRL_PITCH);
 	TEST_ASSERT(Yaw >= MAX_CTRL_YAW);
 	TEST_ASSERT(Thr == PWM_MOTOR_MAX);
