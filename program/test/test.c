@@ -64,7 +64,7 @@ static void test_Update_RC_Control()
 	TEST_ASSERT( Pitch <= MIN_CTRL_PITCH );
 	TEST_ASSERT( Yaw <= MIN_CTRL_YAW );
 	TEST_ASSERT( Thr == PWM_MOTOR_MIN );
-	TEST_ASSERT( safety == ENGINE_ON );
+	TEST_ASSERT( safety != ENGINE_ON );
 	test_pass_count++;
 }
 void run_tests()
