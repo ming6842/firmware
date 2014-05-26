@@ -59,7 +59,7 @@ void send_heartbeat_info()
 	mavlink_msg_heartbeat_pack(1, 200, &msg,
 		MAV_TYPE_QUADROTOR, 
 		MAV_AUTOPILOT_GENERIC, 
-		MAV_MODE_GUIDED_ARMED, 
+		read_global_data_int(MAV_MODE), 
 		0, MAV_STATE_ACTIVE
 	);
 
@@ -137,7 +137,7 @@ void send_global_info()
 	mavlink_msg_heartbeat_pack(1, 200, &msg,
 		MAV_TYPE_QUADROTOR, 
 		MAV_AUTOPILOT_GENERIC, 
-		MAV_MODE_GUIDED_ARMED, 
+		read_global_data_int(MAV_MODE),
 		0, MAV_STATE_ACTIVE
 	);
 	pbuf += mavlink_msg_to_send_buffer(pbuf, &msg);
