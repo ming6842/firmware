@@ -54,6 +54,21 @@ void init_global_data()
         reset_global_data(GPS_VX, "gps.vx", READ_ONLY);
         reset_global_data(GPS_VY, "gps.vy", READ_ONLY);
         reset_global_data(GPS_VZ, "gps.vz", READ_ONLY);
+
+	/* Roll PID parameters */
+	reset_global_data(ROLL_KP, "roll.kp", READ_WRITE);
+	reset_global_data(ROLL_KI, "roll.ki", READ_WRITE);
+        reset_global_data(ROLL_KD, "roll.kd", READ_WRITE);
+
+	/* Pitch PID parameters */
+        reset_global_data(PITCH_KP, "pitch.kp", READ_WRITE);
+        reset_global_data(PITCH_KI, "pitch.ki", READ_WRITE);
+        reset_global_data(PITCH_KD, "pitch.kd", READ_WRITE);
+
+	/* YAW PID parameters */
+        reset_global_data(YAW_KP, "yaw.kp", READ_WRITE);
+        reset_global_data(YAW_KI, "yaw.ki", READ_WRITE);
+        reset_global_data(YAW_KD, "yaw.kd", READ_WRITE);
 } 
 
 

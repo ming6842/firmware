@@ -32,6 +32,15 @@ enum {
 	GPS_VX,
 	GPS_VY,
 	GPS_VZ,
+	ROLL_KP,
+	ROLL_KI,
+	ROLL_KD,
+	PITCH_KP,
+	PITCH_KI,
+	PITCH_KD,
+	YAW_KP,
+	YAW_KI,
+	YAW_KD,
 	SYS_VAR_CNT
 };
 
