@@ -1,31 +1,8 @@
 #include "QuadCopterConfig.h"
 
-PID_t PID_Yaw = {
-	.Kp = 0.0f, .Ki  = 0.0f, .Kd = 0.0f,
-	.Err0 = 0.0f, .Err1 = 0.0f, .Err2 = 0.0f,
-	.SumErr = 0.0f, .ZeroErr = 0.0f,
-	.KiMax = +400.0f, .KiMin = -400.0f,
-	.OutMax = +800.0f, .OutMin = -800.0f,
-	.Output = 0.0f
-};
-
-PID_t PID_Roll = {
-	.Kp = 0.0f, .Ki  = 0.0f, .Kd = 0.0f,
-	.Err0 = 0.0f, .Err1 = 0.0f, .Err2 = 0.0f,
-	.SumErr = 0.0f, .ZeroErr = 0.0f,
-	.KiMax = +400.0f, .KiMin = -400.0f,
-	.OutMax = +800.0f, .OutMin = -800.0f,
-	.Output = 0.0f
-};
-
-PID_t PID_Pitch = {
-	.Kp = 0.0f, .Ki  = 0.0f, .Kd = 0.0f,
-	.Err0 = 0.0f, .Err1 = 0.0f, .Err2 = 0.0f,
-	.SumErr = 0.0f, .ZeroErr = 0.0f,
-	.KiMax = +400.0f, .KiMin = -400.0f,
-	.OutMax = +800.0f, .OutMin = -800.0f,
-	.Output = 0.0f
-};
+PID_t PID_Yaw;
+PID_t PID_Roll;
+PID_t PID_Pitch;
 
 /*=====================================================================================================*/
 /*=====================================================================================================*
