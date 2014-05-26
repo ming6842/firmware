@@ -44,10 +44,13 @@ void Update_RC_Control(int16_t *Roll, int16_t  *Pitch, int16_t  *Yaw, int16_t  *
 	/*Get PWM5 Input capture to set safety switch*/
 	if (read_global_data_float(PWM5_CCR) > (MAX_PWM5_INPUT + MIN_PWM5_INPUT) / 2) {
 		*safety = ENGINE_OFF;
-		set_global_data_int(NO_RC_SIGNAL_MSG, ENGINE_OFF);
+		set_global_data_int(MAV_MODE, MAV_MODE_FLAG_MANUAL_INPUT_ENABLED);
 	} else {
 		*safety = ENGINE_ON;
-		set_global_data_int(NO_RC_SIGNAL_MSG, ENGINE_ON);
+
+		set_global_data_int(MAV_MODE,
+			MAV_MODE_FLAG_SAFETY_ARMED | MAV_MODE_FLAG_MANUAL_INPUT_ENABLED
+		);
 	}
 
 	Bound(*Roll, MIN_CTRL_ROLL, MAX_CTRL_ROLL);

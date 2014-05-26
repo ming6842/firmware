@@ -29,8 +29,6 @@ void init_global_data()
 	reset_global_data(MOTOR3, "motor3", READ_ONLY);
 	reset_global_data(MOTOR4, "motor4", READ_ONLY);
 
-	reset_global_data(NO_RC_SIGNAL_MSG, "rc.status", READ_ONLY);
-	
 	reset_global_data(RC_EXP_ROLL, "rc.roll", READ_ONLY);
 	reset_global_data(RC_EXP_PITCH, "rc.pitch", READ_ONLY);
 	reset_global_data(RC_EXP_YAW, "rc.yaw", READ_ONLY);
@@ -54,6 +52,9 @@ void init_global_data()
         reset_global_data(GPS_VX, "gps.vx", READ_ONLY);
         reset_global_data(GPS_VY, "gps.vy", READ_ONLY);
         reset_global_data(GPS_VZ, "gps.vz", READ_ONLY);
+
+	/* MAV Information */
+	reset_global_data(MAV_MODE, "mav_mode", READ_ONLY);
 } 
 
 

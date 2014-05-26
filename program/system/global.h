@@ -18,7 +18,6 @@ enum {
 	TRUE_ROLL,
 	TRUE_PITCH,
 	TRUE_YAW,
-	NO_RC_SIGNAL_MSG,
 	PID_ROLL,
 	PID_PITCH,
 	PID_YAW,
@@ -32,6 +31,7 @@ enum {
 	GPS_VX,
 	GPS_VY,
 	GPS_VZ,
+	MAV_MODE,
 	SYS_VAR_CNT
 };
 
