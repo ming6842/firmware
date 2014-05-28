@@ -64,13 +64,13 @@
 #define MPU9250T_85degC   ((float)0.00294f)   // 0.00294 degC/LSB
 
 
-uint8_t mpu9250_read_byte(uint8_t );
-void mpu9250_write_byte(uint8_t ,uint8_t );
-uint8_t mpu9250_read_who_am_i();
-void mpu9250_reset();
-void mpu9250_read_accel_temp_gyro(imu_unscaled_data_t* );
-void mpu9250_initialize_config();
-void mpu9250_convert_to_scale(imu_unscaled_data_t* , imu_raw_data_t* ,imu_calibrated_offset_t* );
+// uint8_t mpu9250_read_byte(uint8_t );
+// void mpu9250_write_byte(uint8_t ,uint8_t );
+// uint8_t mpu9250_read_who_am_i();
+// void mpu9250_reset();
+// void mpu9250_read_accel_temp_gyro(imu_unscaled_data_t* );
+// void mpu9250_initialize_config();
+// void mpu9250_convert_to_scale(imu_unscaled_data_t* , imu_raw_data_t* ,imu_calibrated_offset_t* );
 
 
 #endif
