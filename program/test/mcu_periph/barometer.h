@@ -6,9 +6,8 @@
 
 #include "ADS1246_MPX6115A.h"
 
-#define USE_ADS1246_MPX6115A
+//#define USE_ADS1246_MPX6115A // <<< if define it here, it will work :)
 
-//#pragma message "USE_ADS1246_MPX6115A" USE_ADS1246_MPX6115A
 #ifdef USE_ADS1246_MPX6115A
 
 #define barometer_read_altitude() MPX6115_get_raw_altitude(ads1246_readADCconversion())
