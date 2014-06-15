@@ -42,17 +42,17 @@ int main(void)
 
 
 	pid_roll_info.kp =0.20;
-	pid_roll_info.kd =0.07;
+	pid_roll_info.kd =0.08;
 	pid_roll_info.ki =0.0;
 	pid_roll_info.setpoint =0.0;
 
 	pid_pitch_info.kp =0.20;
-	pid_pitch_info.kd =0.07;
+	pid_pitch_info.kd =0.08;
 	pid_pitch_info.ki =0.0;
 	pid_pitch_info.setpoint =0.0;
 
 	pid_yaw_info.kp =0.0;
-	pid_yaw_info.kd =1.7;
+	pid_yaw_info.kd =1.2;
 	pid_yaw_info.ki =0.0;
 	pid_yaw_info.setpoint =0.0;
 
