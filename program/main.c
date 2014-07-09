@@ -28,7 +28,6 @@ void gpio_rcc_init(void)
 		RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE,  ENABLE);	
 }
 
-
 int main(void)
 {
 	uint8_t buffer[100];
@@ -60,7 +59,6 @@ int main(void)
 	vertical_pid_t pid_Zd_info;
 	vertical_pid_t pid_Z_info;
 	nav_pid_t pid_nav_info;
-
 
 	PID_init(&pid_roll_info,&pid_pitch_info ,&pid_yaw_rate_info ,&pid_heading_info,&pid_Z_info ,&pid_Zd_info,&pid_nav_info);
 
@@ -132,9 +130,7 @@ int main(void)
 
 	while (1) {
 
-
 		LED_OFF(LED4);
-
 
 	if(GPS_solution_info.updatedFlag){
 		if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
@@ -148,7 +144,7 @@ int main(void)
 			// 	(int32_t)GPS_velocity_NED.velN,
 			// 	(int32_t)GPS_velocity_NED.velE,
 	 	// 		(uint32_t)GPS_solution_info.numSV);
-			
+		
 
 			sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
 				(int32_t)(vertical_filtered_data.Z* 1.0f),
@@ -161,9 +157,11 @@ int main(void)
 	 			(uint32_t)GPS_solution_info.numSV);
 
 			usart2_dma_send(buffer);
+
 		}	
 	 	GPS_solution_info.updatedFlag=0;
 	}
+
 
 		attitude_update(&attitude,&imu_filtered_data, &predicted_g_data,&imu_unscaled_data,&imu_raw_data,&imu_offset);
 		inverse_rotation_trigonometry_precal(&attitude,&negative_euler);
