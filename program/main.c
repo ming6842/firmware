@@ -88,7 +88,7 @@ int main(void)
 
 		LED_OFF(LED4);
 
-	if(GPS_solution_info.updatedFlag){
+	//if(GPS_solution_info.updatedFlag){
 		if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
 
 			buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
@@ -116,7 +116,7 @@ int main(void)
 
 		}	
 	 	GPS_solution_info.updatedFlag=0;
-	}
+	//}
 
 
 		attitude_update(&attitude,&imu_filtered_data, &predicted_g_data,&imu_unscaled_data,&imu_raw_data,&imu_offset);
@@ -150,6 +150,9 @@ int main(void)
 		PID_rc_pass_command(&attitude,&pid_roll_info,&pid_pitch_info,&pid_heading_info,&pid_Z_info,&pid_Zd_info,&pid_nav_info,&my_rc);
 
 		LED_ON(LED4);
+
+
+		//mpu9250_measure_offset(&imu_unscaled_data,&imu_raw_data);
 
 		while(estimator_trigger_flag==0);
 		estimator_trigger_flag=0;

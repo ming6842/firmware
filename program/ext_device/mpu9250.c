@@ -102,7 +102,7 @@ void mpu9250_apply_accel_calibration(imu_calibrated_offset_t *imu_offset){
 	
 	But actual raw_data for 1g in 8g_full_scale setting should be 4096
 	So that the modify factor for acc_scale will be 4096/(measured1g_scale) (i.e. scale it to 4096)
-	*/
+	
 
 	imu_offset->acc[0]=-4;
 	imu_offset->acc[1]=11;
@@ -111,7 +111,26 @@ void mpu9250_apply_accel_calibration(imu_calibrated_offset_t *imu_offset){
 	imu_offset->acc_scale[0]=4096.0f/4092.0f;//1.002202104f;
 	imu_offset->acc_scale[1]=4096.0f/4095.0f;//1.001222195f;
 	imu_offset->acc_scale[2]=4096.0f/4117.0f;//0.992007750f;
+*/
 
+
+	/* fir big quad
+
+	Raw_Axis |  min   | max  |  average(offset) | 1g_scale	|>
+
+	    0	   -4106	4076	-15					4091 //4094 (fine calibrated)
+	    1	   -4096	4096     0					4096 //4095 (fine calibrated)
+	    2	   -4219  	4003	-108				4111 //4xxx (fine calibrated)
+
+	*/
+
+	imu_offset->acc[0]=-15;
+	imu_offset->acc[1]=0;
+	imu_offset->acc[2]=-108;
+
+	imu_offset->acc_scale[0]=4096.0f/4091.0f;//1.002202104f;
+	imu_offset->acc_scale[1]=4096.0f/4096.0f;//1.001222195f;
+	imu_offset->acc_scale[2]=4096.0f/4111.0f;//0.992007750f;
 }
 
 void mpu9250_read_accel_temp_gyro(imu_unscaled_data_t *imu_unscaledData)
