@@ -78,55 +78,11 @@ int main(void)
 	cycle_led(5);
 	magnetometer_initialize(&imu_offset);
 
-	// lea6h_set_USART_IT();
-	// while(1){
-	// 	Delay_1us(80);
-
-	// 	LED_TOGGLE(LED4);
-
-	// 	lea6h_ubx_get_updated_data(&GPS_velocity_NED,&GPS_solution_info,&GPS_position_LLH);
-
-	// 	if(GPS_solution_info.updatedFlag){
-
-
-
-
-	// 	if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
-
-	// 		buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
-
-
-	// 		// sprintf((char *)buffer, "%ld,%ld,%ld\r\n",
-	// 		// 	(int32_t)(imu_raw_data.mag[0]),
-	// 		// 	(int32_t)(imu_raw_data.mag[1]),
-	// 		// 	(int32_t)(imu_raw_data.mag[2]));
-
-
-	// 		sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,\r\n",
-
-
-	// 				(uint32_t)GPS_velocity_NED.itow,
-	// 				(int32_t)GPS_velocity_NED.velN,
-	// 				(int32_t)GPS_velocity_NED.velE,
-	// 				(uint32_t)GPS_solution_info.pAcc,
-	// 				(uint32_t)GPS_velocity_NED.speedAccu,
-	// 				(uint32_t)GPS_solution_info.pDOP,
-	// 				(uint32_t)GPS_solution_info.numSV);
-	// 		usart2_dma_send(buffer);
-
-	// 	}	
-	// 	GPS_solution_info.updatedFlag=0;
-	// }
-	// }
-
-
 	imu_initialize(&imu_offset,30000);
 
 	check_rc_safety_init(&my_rc);
  	barometer_initialize();
 	lea6h_set_USART_IT();
-
- 	barometer_initialize();
 
 	while (1) {
 
