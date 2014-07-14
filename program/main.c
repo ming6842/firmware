@@ -88,7 +88,7 @@ int main(void)
 
 		LED_OFF(LED4);
 
-	//if(GPS_solution_info.updatedFlag){
+	if(GPS_solution_info.updatedFlag){
 		if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
 
 			buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
@@ -101,13 +101,13 @@ int main(void)
 			// 	(int32_t)GPS_velocity_NED.velE,
 	 	// 		(uint32_t)GPS_solution_info.numSV);
 		
-			/* for magnetometer calib */
-			sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
-				(int32_t)(imu_unscaled_data.mag[0]),
-				(int32_t)(imu_unscaled_data.mag[1]),
-				(int32_t)(imu_unscaled_data.mag[2]),
-				(int32_t)GPS_velocity_NED.velE,
-	 			(uint32_t)GPS_solution_info.numSV);
+			// /* for magnetometer calib */
+			// sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+			// 	(int32_t)(imu_unscaled_data.mag[0]),
+			// 	(int32_t)(imu_unscaled_data.mag[1]),
+			// 	(int32_t)(imu_unscaled_data.mag[2]),
+			// 	(int32_t)GPS_velocity_NED.velE,
+	 	// 		(uint32_t)GPS_solution_info.numSV);
 		
 
 			// sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
@@ -120,11 +120,24 @@ int main(void)
 	 	// 		(uint32_t)GPS_solution_info.pAcc,
 	 	// 		(uint32_t)GPS_solution_info.numSV);
 
+			/* for Fangying's thesis */
+			sprintf((char *)buffer, "%lu,%ld,%ld,%ld,%ld,%ld,%ld,%lu,%lu\r\n",
+
+				(uint32_t)(GPS_position_LLH.itow),
+				(int32_t)(attitude.yaw * 10.0f),
+				(int32_t)(attitude.roll * 10.0f),
+				(int32_t)(attitude.pitch * 10.0f),
+				(int32_t)GPS_position_LLH.lat,
+				(int32_t)GPS_position_LLH.lon,
+				(int32_t)(vertical_filtered_data.Z* 1.0f),
+	 			(uint32_t)GPS_solution_info.pAcc,
+	 			(uint32_t)GPS_solution_info.numSV);
+
 			usart2_dma_send(buffer);
 
 		}	
 	 	GPS_solution_info.updatedFlag=0;
-	//}
+	}
 
 
 		attitude_update(&attitude,&imu_filtered_data, &predicted_g_data,&imu_unscaled_data,&imu_raw_data,&imu_offset);

@@ -59,14 +59,14 @@ void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_p
 	PID_pitch -> ki =0.0;
 	PID_pitch -> setpoint =0.0;
 
-	PID_yaw_rate -> kp =0.3f;//0.8f;
+	PID_yaw_rate -> kp =0.8f;//0.8f;
 	PID_yaw_rate -> kd =0.0f;
 	PID_yaw_rate -> ki =0.0;
 	PID_yaw_rate -> setpoint =0.0;
 	PID_yaw_rate -> out_max = 30.0f;
 	PID_yaw_rate -> out_min = -30.0f;
 
-	PID_heading -> kp = 1.5f;//3.0f;
+	PID_heading -> kp = 3.0f;//3.0f;
 	PID_heading -> kd = 0.0f;
 	PID_heading -> ki = 0.0;
 	PID_heading -> out_max = 50.0f;
@@ -80,7 +80,7 @@ void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_p
 	PID_Zd -> out_min = -20.0f;
 	PID_Zd -> setpoint =0.0;
 
-	PID_Z -> kp =0.0f;//1.8f;
+	PID_Z -> kp =1.8f;//1.8f;
 	PID_Z -> kd =0.0;
 	PID_Z -> ki =0.0;
 	PID_Z -> out_max = +50.0f;
@@ -88,8 +88,8 @@ void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_p
 	PID_Z -> setpoint =0.0;
 
 
-	PID_nav -> kp =0.0f;//0.045f;
-	PID_nav -> kd =0.0f;//0.06;
+	PID_nav -> kp =0.045f;//0.045f;
+	PID_nav -> kd =0.06f;//0.06;
 	PID_nav -> ki =0.0;
 	PID_nav -> out_max = +25.0f;
 	PID_nav -> out_min = -25.0f;
