@@ -101,16 +101,24 @@ int main(void)
 			// 	(int32_t)GPS_velocity_NED.velE,
 	 	// 		(uint32_t)GPS_solution_info.numSV);
 		
-
-			sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
-				(int32_t)(vertical_filtered_data.Z* 1.0f),
-				(int32_t)(vertical_filtered_data.Zd* 1.0f),
-				(int32_t)(pid_nav_info.output_roll* 1.0f),
-				(int32_t)(pid_nav_info.output_pitch* 1.0f),
+			/* for magnetometer calib */
+			sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+				(int32_t)(imu_unscaled_data.mag[0]),
+				(int32_t)(imu_unscaled_data.mag[1]),
+				(int32_t)(imu_unscaled_data.mag[2]),
 				(int32_t)GPS_velocity_NED.velE,
-
-	 			(uint32_t)GPS_solution_info.pAcc,
 	 			(uint32_t)GPS_solution_info.numSV);
+		
+
+			// sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+			// 	(int32_t)(vertical_filtered_data.Z* 1.0f),
+			// 	(int32_t)(vertical_filtered_data.Zd* 1.0f),
+			// 	(int32_t)(pid_nav_info.output_roll* 1.0f),
+			// 	(int32_t)(pid_nav_info.output_pitch* 1.0f),
+			// 	(int32_t)GPS_velocity_NED.velE,
+
+	 	// 		(uint32_t)GPS_solution_info.pAcc,
+	 	// 		(uint32_t)GPS_solution_info.numSV);
 
 			usart2_dma_send(buffer);
 
