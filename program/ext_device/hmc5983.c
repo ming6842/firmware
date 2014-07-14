@@ -97,9 +97,9 @@ void hmc5983_apply_mag_calibration(imu_calibrated_offset_t *imu_offset){
 
 	Raw_Axis |  min   | max  |  average(offset) | 1-north scale	|>
 
-	    X	   -728		664		-32					4087 //4094 (fine calibrated)
-	    Y	   -881		534 	-174 					4091 // 4095 (fine calibrated)
-	    Z	   -871  	442 	-215				4129 //4xxx (fine calibrated)
+	    X	   -580 	810		115					695 //4094 (fine calibrated)
+	    Y	   -1210	191 	-509				700 // 4095 (fine calibrated)
+	    Z	   138  	1504 	821					683 //4xxx (fine calibrated)
 	
 	*/
 
@@ -109,9 +109,9 @@ void hmc5983_apply_mag_calibration(imu_calibrated_offset_t *imu_offset){
 	imu_offset -> mag_scale[1]=1.0f;
 	imu_offset -> mag_scale[2]=1.0f;
 
-	imu_offset -> mag[0]=(int16_t)(-32);
-	imu_offset -> mag[1]=(int16_t)(-174);
-	imu_offset -> mag[2]=(int16_t)(-215);
+	imu_offset -> mag[0]=(int16_t)(115);
+	imu_offset -> mag[1]=(int16_t)(-509);
+	imu_offset -> mag[2]=(int16_t)(-821);
 
 }
 
