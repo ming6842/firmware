@@ -101,11 +101,15 @@ int main(void)
 			// 	(int32_t)GPS_velocity_NED.velE,
 	 	// 		(uint32_t)GPS_solution_info.numSV);
 		
-			// /* for magnetometer calib */
-			// sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+			/* for magnetometer calib */
+			// sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+			//  	(int32_t)(attitude.yaw * 10.0f),
 			// 	(int32_t)(imu_unscaled_data.mag[0]),
 			// 	(int32_t)(imu_unscaled_data.mag[1]),
 			// 	(int32_t)(imu_unscaled_data.mag[2]),
+			// 	(int32_t)(imu_raw_data.mag[0]),
+			// 	(int32_t)(imu_raw_data.mag[1]),
+			// 	(int32_t)(imu_raw_data.mag[2]),
 			// 	(int32_t)GPS_velocity_NED.velE,
 	 	// 		(uint32_t)GPS_solution_info.numSV);
 		
