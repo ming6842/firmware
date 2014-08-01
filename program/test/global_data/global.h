@@ -9,29 +9,14 @@
 
 /* Global data enumeration */
 enum {
-	/* Vehicle type */
-	VEHICLE_TYPE,
-	/* Attitude information (true value ) */
-	TRUE_ROLL,
-	TRUE_PITCH,
-	TRUE_YAW,
-	/* GPS information */
-	GPS_LAT,
-	GPS_LON,
-	GPS_ALT,	
-	GPS_VX,
-	GPS_VY,
-	GPS_VZ,
-	/* PID Controller */
-	ROLL_KP,
-	ROLL_KI,
-	ROLL_KD,
-	PITCH_KP,
-	PITCH_KI,
-	PITCH_KD,
-	YAW_KP,
-	YAW_KI,
-	YAW_KD,
+	TEST_UINT8,
+	TEST_INT8,
+	TEST_UINT16,
+	TEST_INT16,
+	TEST_UINT32,
+	TEST_INT32,
+	TEST_FLOAT,
+	TEST_PARAMETER_CONFIG,
 	GLOBAL_DATA_CNT
 };
 

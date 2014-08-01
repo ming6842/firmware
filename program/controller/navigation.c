@@ -1,9 +1,10 @@
 //navigation.c
 #include "navigation.h"
-
+#include "mission.h"
 // NED -> XYZ so, N~x, E~y
 // lat=N/S -> x, lon=E/W -> y
 
+extern waypoint_info_t waypoint_info;
 
 void PID_Nav(nav_pid_t *PID_control,attitude_t *attitude,UBXvelned_t *UBXvelned, UBXposLLH_t *UBXposLLH){
 
@@ -185,7 +186,34 @@ void navigation_task(void){
 
 		/* command interpreter and decision (required connection with MAVLink) */
 		navigation_info.navigation_mode = NAVIGATION_MODE_HOLD_POINT; // Dummy command
-		/* waiting for integration */
+		/* copy mavlink waypoints to navigation info struct*/
+		/* check the waypoints have been updated */
+		if (navigation_info.waypoint_status == NOT_HAVE_BEEN_UPDATED) {
+			/*Resources is availabe*/
+			if (waypoint_info.is_busy == false)
+			{
+				/*lock the resources*/
+				waypoint_info.is_busy = true;
+				/*copying*/
+				int i;
+				waypoint_t* wp_ptr;
+				for ( i=0; i < waypoint_info.waypoint_count; i++){
+
+					wp_ptr = get_waypoint(waypoint_info.waypoint_list, i);
+					navigation_info.wp_info[i].position.lat = (int32_t)(wp_ptr->data.x * 1E7f);
+					navigation_info.wp_info[i].position.lon = (int32_t)(wp_ptr->data.y * 1E7f);
+					navigation_info.wp_info[i].position.alt = wp_ptr->data.z;
+					navigation_info.wp_info[i].tol_radius = wp_ptr->data.param2;
+					navigation_info.wp_info[i].autocontinue = wp_ptr->data.autocontinue;
+					navigation_info.wp_info[i].data_available = 1;
+					
+					
+				}
+				navigation_info.waypoint_status = HAVE_BEEN_UPDATED;
+				/*unlock the resources*/
+				waypoint_info.is_busy = false;
+			}
+		}
 
 		if(navigation_info.navigation_mode != NAVIGATION_MODE_HOLD_POINT){ 
 
