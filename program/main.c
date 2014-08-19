@@ -51,21 +51,12 @@ void vApplicationMallocFailedHook(void)
 	while(1);
 }
 
-
-#define BOOT_TIME_TIMER 0
-static uint32_t counter = 0;
-void boot_time_timer(void)
-{
-	counter++;
-	set_global_data_value(BOOT_TIME, UINT32, (Data)counter);
-}
-
-
 int main(void)
 {
 	vSemaphoreCreateBinary(serial_tx_wait_sem);
 	serial_rx_queue = xQueueCreate(5, sizeof(serial_msg));
 
+	vSemaphoreCreateBinary(flight_control_sem);
 	/* Global data initialazition */
 	init_global_data();
 
@@ -90,7 +81,7 @@ int main(void)
 		tskIDLE_PRIORITY + 9,
 		NULL
 	);
-
+#if 0
 	/* Navigation task */
 	xTaskCreate(
 		(pdTASK_CODE)navigation_task,
@@ -100,35 +91,25 @@ int main(void)
 		tskIDLE_PRIORITY + 7,
 		NULL
 	);
+#endif
+	/* Ground station communication task */	
+	xTaskCreate(
+		(pdTASK_CODE)ground_station_task,
+		(signed portCHAR *)"ground station send task",
+		2048,
+		NULL,
+		tskIDLE_PRIORITY + 5,
+		NULL
+	);
 
-	// /* Ground station communication task */	
- //        xTaskCreate(
-	// 	(pdTASK_CODE)ground_station_task,
-	// 	(signed portCHAR *)"ground station send task",
-	// 	2048,
-	// 	NULL,
-	// 	tskIDLE_PRIORITY + 5,
-	// 	NULL
-	// );
+	xTaskCreate(
+		(pdTASK_CODE)mavlink_receiver_task,
+		(signed portCHAR *) "ground station receive task",
+		2048,
+		NULL,
+		tskIDLE_PRIORITY + 8, NULL
+	);
 
-	// xTaskCreate(
-	// 	(pdTASK_CODE)mavlink_receiver_task,
-	// 	(signed portCHAR *) "ground station receive task",
-	// 	2048,
-	// 	NULL,
-	// 	tskIDLE_PRIORITY + 8, NULL
-	// );
-
-	// /* Timer */
-	// xTimers[BOOT_TIME_TIMER] = xTimerCreate(
-	// 	    (signed portCHAR *) "boot time",
-	// 	    configTICK_RATE_HZ,
-	// 	    pdTRUE,
-	// 	    BOOT_TIME_TIMER,
-	// 	    (tmrTIMER_CALLBACK)boot_time_timer
-	// );
-
-	// xTimerStart(xTimers[BOOT_TIME_TIMER], 0);
 	vTaskStartScheduler();
 
 	return 0;

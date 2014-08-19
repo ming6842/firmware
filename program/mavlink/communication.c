@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "_math.h"
 
 #include "usart.h"
@@ -16,6 +16,7 @@
 #include "command_parser.h"
 #include "FreeRTOS.h"
 #include "system_time.h"
+#include "io.h"
 mavlink_message_t received_msg;
 mavlink_status_t received_status;
 
@@ -64,11 +65,11 @@ static void send_gps_info(void)
 	mavlink_message_t msg;
 
 	mavlink_msg_global_position_int_pack(1, 220, &msg, 
-		get_system_time_sec(),   		       //time 
-		latitude * 1E7,  //Latitude
-		longitude * 1E7,  //Longitude
-		0, //Altitude
-		altitude,
+		get_system_time_ms(),   		       //time 
+		latitude ,  //Latitude
+		longitude ,  //Longitude
+		altitude, //Altitude
+		0,
 		gps_vx * 100,   //Speed-Vx
 		gps_vy * 100,   //Speed-Vy
 		gps_vz * 100,   //Speed-Vz
@@ -89,7 +90,7 @@ static void send_attitude_info(void)
 	read_global_data_value(TRUE_YAW, DATA_POINTER_CAST(&attitude_yaw));
 
 	mavlink_msg_attitude_pack(1, 200, &msg,
-		get_system_time_sec(),
+		get_system_time_ms(),
 		toRad(attitude_roll), 
 		toRad(attitude_pitch), 
 		toRad(attitude_yaw), 
@@ -128,14 +129,15 @@ void ground_station_task(void)
 	uint32_t cnt = 0;
 	
 	while(1) {
-		if(cnt == 20) {
+		if(cnt == 15) {
 			send_heartbeat_info();
+			send_gps_info();
 			//send_system_info();
 
 			cnt = 0;
 		}
 		send_attitude_info();
-		send_gps_info();
+		
 		vTaskDelay(delay_t);
 
 		mavlink_parse_received_cmd(&received_msg);
