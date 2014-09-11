@@ -67,7 +67,7 @@ static void enable_usart2(void)
 
 	/* USART2 Initialization */
 	USART_InitTypeDef USART_InitStruct = {
-		.USART_BaudRate = 9600,
+		.USART_BaudRate = 57600,
 		.USART_WordLength = USART_WordLength_8b,
 		.USART_StopBits = USART_StopBits_1,
 		.USART_Parity = USART_Parity_No,
@@ -330,7 +330,7 @@ int _write(int fd, char *ptr, int len)
 
 xSemaphoreHandle serial_tx_wait_sem = NULL;
 xQueueHandle serial_rx_queue = NULL;
-
+xQueueHandle gps_serial_queue = NULL;
 void USART3_IRQHandler(void)
 {
 	long lHigherPriorityTaskWoken = pdFALSE;
