@@ -102,7 +102,8 @@ int main(void)
 	 	// 		(uint32_t)GPS_solution_info.numSV);
 		
 
-			sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+			sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+				(int32_t)(attitude.yaw * 1.0f),
 				(int32_t)(vertical_filtered_data.Z* 1.0f),
 				(int32_t)(vertical_filtered_data.Zd* 1.0f),
 				(int32_t)(pid_nav_info.output_roll* 1.0f),
