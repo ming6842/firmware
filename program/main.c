@@ -19,6 +19,11 @@
 #include "lea6h_ubx.h"
 
 extern uint8_t estimator_trigger_flag;
+
+
+/* temporary use */
+motor_output_t motor_for_yu_chi_data_out;
+
 void gpio_rcc_init(void);
 
 
@@ -30,7 +35,8 @@ void gpio_rcc_init(void)
 
 int main(void)
 {
-	uint8_t buffer[100];
+	uint8_t buffer[200];
+	uint32_t transmit_delay_count=0;
 
 	/* State estimator initialization */
 	imu_unscaled_data_t imu_unscaled_data;
@@ -60,6 +66,7 @@ int main(void)
 	vertical_pid_t pid_Z_info;
 	nav_pid_t pid_nav_info;
 
+
 	PID_init(&pid_roll_info,&pid_pitch_info ,&pid_yaw_rate_info ,&pid_heading_info,&pid_Z_info ,&pid_Zd_info,&pid_nav_info);
 
 	attitude_estimator_init(&attitude,&imu_raw_data, &imu_filtered_data,&predicted_g_data);
@@ -87,10 +94,48 @@ int main(void)
 	while (1) {
 
 		LED_OFF(LED4);
+		
 
-	if(GPS_solution_info.updatedFlag){
-		if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
+	// if(GPS_solution_info.updatedFlag){
+	// 	if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
 
+	// 		buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
+
+	// 		/* for doppler PID test */
+	// 		// sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+	// 		// 	(int32_t)(pid_nav_info.output_roll* 1.0f),
+	// 		// 	(int32_t)(pid_nav_info.output_pitch* 1.0f),
+	// 		// 	(int32_t)GPS_velocity_NED.velN,
+	// 		// 	(int32_t)GPS_velocity_NED.velE,
+	//  	// 		(uint32_t)GPS_solution_info.numSV);
+		
+
+	// 		sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+	// 			(int32_t)(attitude.yaw * 1.0f),
+	// 			(int32_t)(vertical_filtered_data.Z* 1.0f),
+	// 			(int32_t)(vertical_filtered_data.Zd* 1.0f),
+	// 			(int32_t)(pid_nav_info.output_roll* 1.0f),
+	// 			(int32_t)(pid_nav_info.output_pitch* 1.0f),
+	// 			(int32_t)GPS_velocity_NED.velE,
+
+	//  			(uint32_t)GPS_solution_info.pAcc,
+	//  			(uint32_t)GPS_solution_info.numSV);
+
+	// 		usart2_dma_send(buffer);
+	// 	}	
+	//  	GPS_solution_info.updatedFlag=0;
+	// }
+
+		transmit_delay_count++;
+		if ((DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) && (transmit_delay_count >= 100)) {
+
+			uint8_t iii=0;
+
+			for(iii=0;iii<190;iii++){
+
+				buffer[iii]=0;
+
+			};
 			buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
 
 			/* for doppler PID test */
@@ -102,21 +147,34 @@ int main(void)
 	 	// 		(uint32_t)GPS_solution_info.numSV);
 		
 
-			sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
-				(int32_t)(attitude.yaw * 1.0f),
-				(int32_t)(vertical_filtered_data.Z* 1.0f),
-				(int32_t)(vertical_filtered_data.Zd* 1.0f),
-				(int32_t)(pid_nav_info.output_roll* 1.0f),
-				(int32_t)(pid_nav_info.output_pitch* 1.0f),
-				(int32_t)GPS_velocity_NED.velE,
-
-	 			(uint32_t)GPS_solution_info.pAcc,
-	 			(uint32_t)GPS_solution_info.numSV);
+			sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+				(int32_t)(attitude.roll 					* 100.0f),
+				(int32_t)(attitude.pitch 					* 100.0f),
+				(int32_t)(attitude.yaw 						* 100.0f),
+				(int32_t)(imu_filtered_data.acc[0] 			* 100.0f),
+				(int32_t)(imu_filtered_data.acc[1] 			* 100.0f),
+				(int32_t)(imu_filtered_data.acc[2] 			* 100.0f),
+				(int32_t)(imu_filtered_data.gyro[0] 		* 100.0f),
+				(int32_t)(imu_filtered_data.gyro[1] 		* 100.0f),
+				(int32_t)(imu_filtered_data.gyro[2] 		* 100.0f),
+				(int32_t)(vertical_filtered_data.Z			* 100.0f),
+				(int32_t)(vertical_filtered_data.Zd 		* 100.0f),
+				(int32_t)(my_rc.roll_control_input  		* 100.0f),
+				(int32_t)(my_rc.pitch_control_input  		* 100.0f),
+				(int32_t)(my_rc.throttle_control_input  	* 100.0f),
+				(int32_t)(my_rc.yaw_rate_control_input  	* 100.0f),
+				(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
+				(int32_t)(motor_for_yu_chi_data_out.m2  	* 10.0f),
+				(int32_t)(motor_for_yu_chi_data_out.m3  	* 10.0f),
+				(int32_t)(motor_for_yu_chi_data_out.m4  	* 10.0f));
 
 			usart2_dma_send(buffer);
+			transmit_delay_count = 0;
+			LED_TOGGLE(LED1);
 		}	
-	 	GPS_solution_info.updatedFlag=0;
-	}
+
+
+
 
 
 		attitude_update(&attitude,&imu_filtered_data, &predicted_g_data,&imu_unscaled_data,&imu_raw_data,&imu_offset);
