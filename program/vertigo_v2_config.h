@@ -8,6 +8,7 @@
 #define IS_USE_MAGNETOMETER 1
 #define IS_USE_BAROMETER 1
 #define IS_USE_GPS 1
+#define IS_USE_BAROMETER_REFERENCE 1
 /*Set magnetometer*/
 #if IS_USE_MAGNETOMETER
 

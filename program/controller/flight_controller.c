@@ -57,6 +57,12 @@ void flight_control_task(void)
 	lea6h_set_USART_IT();
 #endif 
 
+#if IS_USE_BAROMETER_REFERENCE
+	baro_groundstation_set_USART_IT();
+#endif
+
+	baro_groundstation_set_USART_IT();
+	
 	while (1) {
 
 		if ( xSemaphoreTake(flight_control_sem, 9) == pdTRUE) {

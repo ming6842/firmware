@@ -13,6 +13,7 @@
 #include "lea6h_ubx.h"// Should link to higher level like GPS.h but so far we have one GPS receiver only.
 #include "usart.h"
 #include "system_time.h"
+#include "barometer_groundstation.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
