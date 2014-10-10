@@ -6,6 +6,7 @@
 #include "queue.h"
 #include "led.h" 
 void baro_groundstation_set_USART_IT(void);
-void USART2_IRQHandler(void);
-
+void UART8_IRQHandler(void);
+char uart8_read(void);
+void baro_reference_receive_task(void);
 #endif
