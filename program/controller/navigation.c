@@ -4,7 +4,7 @@
 #include "simple_navigation.h"
 // NED -> XYZ so, N~x, E~y
 // lat=N/S -> x, lon=E/W -> y
-#define WAYPOINT_DEBUG printf
+//#define WAYPOINT_DEBUG printf
 extern waypoint_info_t waypoint_info;
 
 bool nav_waypoint_list_is_updated = true;
@@ -212,7 +212,11 @@ void navigation_task(void){
 		/*copying waypoints if possible*/
 		if ( (nav_waypoint_list_is_updated == false) && (waypoint_info.is_busy == false))
 			{
+
+	#ifdef WAYPOINT_DEBUG
+
 				WAYPOINT_DEBUG("start copying waypoints\r\n");
+	#endif
 				/*lock the resources*/
 				waypoint_info.is_busy = true;
 				/*copying*/
@@ -244,7 +248,9 @@ void navigation_task(void){
 				nav_waypoint_list_is_updated = true;
 				/*unlock the resources*/
 				waypoint_info.is_busy = false;
+	#ifdef WAYPOINT_DEBUG
 				WAYPOINT_DEBUG("finish copying waypoints\r\n");
+	#endif
 			}
 
 		if(navigation_info.navigation_mode != NAVIGATION_MODE_HOLD_POINT){ 
@@ -265,19 +271,25 @@ void navigation_task(void){
 				/* hold at current position */
 			    case NAVIGATION_MODE_HOLD_POINT:
 			    	navigation_info.target_pos = navigation_info.hold_wp;
+	#ifdef WAYPOINT_DEBUG
 			    	WAYPOINT_DEBUG("NAVIGATION_MODE_HOLD_POINT\r\n");
+	#endif
 			    break;
 
 				/* Go back to home position */
 			    case NAVIGATION_MODE_GO_HOME:
 			    	navigation_info.target_pos = navigation_info.home_wp;
+	#ifdef WAYPOINT_DEBUG
 			    	WAYPOINT_DEBUG("NAVIGATION_MODE_GO_HOME\r\n");
+	#endif
 			    break;
 
 				/* Go to specific coordinate */
 			    case NAVIGATION_MODE_GO_SPECIFIED_POS:
 			    	navigation_info.target_pos = navigation_info.instant_wp;
+	#ifdef WAYPOINT_DEBUG
 			    	WAYPOINT_DEBUG("NAVIGATION_MODE_GO_SPECIFIED_POS\r\n");
+	#endif
 
 			    break;
 
@@ -295,7 +307,9 @@ void navigation_task(void){
 			    		if(navigation_info.wp_info[navigation_info.current_wp_id].data_available==1){
 					    	navigation_info.wp_info[navigation_info.current_wp_id].waypoint_state = WAYPOINT_STATUS_ACTIVE;
 							
+	#ifdef WAYPOINT_DEBUG
 					WAYPOINT_DEBUG("OK_ ");
+	#endif
 					    	/* Guide aircraft to target */
 							navigation_info.target_pos = navigation_info.wp_info[navigation_info.current_wp_id].position;
 							navigation_info.target_pos_updated_flag = true;
@@ -306,13 +320,17 @@ void navigation_task(void){
 						}else{
 
 
+	#ifdef WAYPOINT_DEBUG
 					WAYPOINT_DEBUG("WRONG _ ");
+	#endif
 							/* something is wrong, go to hold_point */
 							navigation_info.navigation_mode = NAVIGATION_MODE_HOLD_POINT;
 							
 						}
 
+	#ifdef WAYPOINT_DEBUG
 					WAYPOINT_DEBUG("WAYPOINT_STATUS_PENDING %d\r\n",navigation_info.current_wp_id);
+	#endif
 			    	break;
 
 			    	/* this waypoint is in process */
@@ -336,7 +354,9 @@ void navigation_task(void){
 				    	/* Guide aircraft to target */
 						navigation_info.target_pos = navigation_info.wp_info[navigation_info.current_wp_id].position;
 						navigation_info.target_pos_updated_flag = true;
+	#ifdef WAYPOINT_DEBUG
 						WAYPOINT_DEBUG("WAYPOINT_STATUS_ACTIVE %d\r\n",navigation_info.current_wp_id);
+	#endif
 			    	break;
 
 
@@ -357,7 +377,9 @@ void navigation_task(void){
 						navigation_info.target_pos = navigation_info.wp_info[navigation_info.current_wp_id].position;
 						navigation_info.target_pos_updated_flag = true;
 
+	#ifdef WAYPOINT_DEBUG
 						WAYPOINT_DEBUG("WAYPOINT_STATUS_LOITERING\r\n");
+	#endif
 			    	break;
 
 			    	case WAYPOINT_STATUS_DONE:
@@ -388,7 +410,9 @@ void navigation_task(void){
 
 
 			    		}
+	#ifdef WAYPOINT_DEBUG
 			    		WAYPOINT_DEBUG("WAYPOINT_STATUS_DONE\r\n");
+	#endif
 
 			    	break;
 
