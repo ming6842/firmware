@@ -6,6 +6,9 @@
 #include "queue.h"
 #include "led.h" 
 #include <string.h>
+#include "basic_filter.h"
+#include <math.h>
+
 void baro_groundstation_set_USART_IT(void);
 void UART8_IRQHandler(void);
 char uart8_read(void);

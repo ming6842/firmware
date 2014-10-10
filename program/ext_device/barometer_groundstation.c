@@ -63,6 +63,7 @@ static uint8_t chksum_OK_flag=0;
 static uint32_t rcv_err_count=0;
 
 float baro_ref_output_cm=0.0f;
+float V_Z_reference=0.0f;
 int32_t rcv_raw_data=0.0f;
 
 void receive_error_handler(void){
@@ -92,7 +93,7 @@ void baro_reference_receive_task(void){
 	uint8_t i=0;
 	uint8_t chksum_trans=0;
 	uint8_t chksum_calc=0;
-
+	uint8_t first_data_flag=1;
 
 	while(1){
 
@@ -142,7 +143,14 @@ void baro_reference_receive_task(void){
 				memcpy(&rcv_raw_data,&baroRefBuffer[3],sizeof(int32_t));
 				baro_ref_output_cm = (float)rcv_raw_data*0.0001f;
 
+				if((float)(fabs(V_Z_reference - baro_ref_output_cm))<500.0f){
+				V_Z_reference= lowpass_float(&V_Z_reference,&baro_ref_output_cm,0.05f);
+				}else if(first_data_flag){
 
+					first_data_flag=0;
+					V_Z_reference = baro_ref_output_cm;
+
+				}
 				/* Debug session */
 
 
@@ -160,9 +168,10 @@ void baro_reference_receive_task(void){
 			 	// 		(uint32_t)GPS_solution_info.numSV);
 				
 
-					sprintf((char *)buffer, "%ld,%ld,\n",
+					sprintf((char *)buffer, "%ld,%ld,%ld\n",
 						
 			 			(int32_t)(baro_ref_output_cm*10000.0f),
+			 			(int32_t)(V_Z_reference*10000.0f),
 			 			(uint32_t)(rcv_err_count));
 
 					usart2_dma_send(buffer);
