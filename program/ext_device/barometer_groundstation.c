@@ -149,7 +149,7 @@ void baro_reference_receive_task(void){
 
 				if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
 
-					buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
+					buffer[5] = 0;buffer[6] = 0;buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
 
 					/* for doppler PID test */
 					// sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
@@ -160,9 +160,10 @@ void baro_reference_receive_task(void){
 			 	// 		(uint32_t)GPS_solution_info.numSV);
 				
 
-					sprintf((char *)buffer, "%ld,\r\n",
+					sprintf((char *)buffer, "%ld,%ld,\n",
 						
-			 			(int32_t)(baro_ref_output_cm*10000.0f));
+			 			(int32_t)(baro_ref_output_cm*10000.0f),
+			 			(uint32_t)(rcv_err_count));
 
 					usart2_dma_send(buffer);
 				}	
