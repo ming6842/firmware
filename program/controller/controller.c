@@ -1,6 +1,6 @@
 #include "controller.h"
 
-void PID_rc_pass_command(attitude_t* attitude,attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_heading,vertical_pid_t* PID_Z,vertical_pid_t* PID_Zd,nav_pid_t* PID_nav,radio_controller_t* rc_command){
+void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered_data,attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_heading,vertical_pid_t* PID_Z,vertical_pid_t* PID_Zd,nav_pid_t* PID_nav,radio_controller_t* rc_command){
 
 	PID_roll -> setpoint = (rc_command -> roll_control_input) + (PID_nav -> output_roll);
 	PID_pitch -> setpoint = (rc_command -> pitch_control_input) + (PID_nav -> output_pitch);
