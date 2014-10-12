@@ -93,11 +93,12 @@ void flight_control_task(void)
 					test1111 =  gap_float_middle(my_rc.throttle_control_input-50.0f, -7.0f, 7.0f);
 					
 
-					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld\r\n",
 						(int32_t)(vertical_filtered_data.Z* 1.0f),
 						(int32_t)(my_rc.throttle_control_input* 1.0f),
 						(int32_t)(test1111* 1.0f),
 						(int32_t)(altitude_setpoint_accumulator/4000),
+						(int32_t)(pid_Z_info.setpoint),
 
 			 			(uint32_t)GPS_solution_info.numSV);
 

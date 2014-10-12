@@ -2,15 +2,61 @@
 
 int32_t altitude_setpoint_accumulator=0;
 
-#define RC_ALTITUDE_STICK_SENSITIVITY  1.0f
+#define RC_ALTITUDE_STICK_SENSITIVITY  2.0f
+#define Z_SETPOINT_DISTANCE_LIMIT 500.0f //CM unit
 
 void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered_data,attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_heading,vertical_pid_t* PID_Z,vertical_pid_t* PID_Zd,nav_pid_t* PID_nav,radio_controller_t* rc_command){
+
+	int32_t altitude_accomulator_precal = 0;
 
 	PID_roll -> setpoint = (rc_command -> roll_control_input) + (PID_nav -> output_roll);
 	PID_pitch -> setpoint = (rc_command -> pitch_control_input) + (PID_nav -> output_pitch);
 
+	/* pre-calculate current accumulator */
+	altitude_accomulator_precal = (int32_t)(gap_float_middle(rc_command -> throttle_control_input-50.0f, -7.0f, 7.0f) * RC_ALTITUDE_STICK_SENSITIVITY);
 
-	altitude_setpoint_accumulator +=  (int32_t)(gap_float_middle(rc_command -> throttle_control_input-50.0f, -7.0f, 7.0f) * RC_ALTITUDE_STICK_SENSITIVITY);
+	/* check if setpoint is too far already */
+
+	if(fabsf( PID_Z -> setpoint - vertical_filtered_data -> Z ) > Z_SETPOINT_DISTANCE_LIMIT){
+
+		if(altitude_accomulator_precal>0){ // command to going higher case
+
+			if(( PID_Z -> setpoint -  vertical_filtered_data -> Z ) > 0){ // check if setpoint is already too high
+
+				/* need failsafe mechanism here */
+
+			}else{ // setpoint is not too high, may be it's too low
+
+				/* Accumulating is ok */
+				altitude_setpoint_accumulator +=  altitude_accomulator_precal;
+
+			}
+
+		}else{  // commanding to go lower (altitude_accomulator_precal<0)
+
+			if(( PID_Z -> setpoint -  vertical_filtered_data -> Z ) < 0){  // check if setpoint is already too low
+
+				/* need failsafe mechanism here */
+				/*FIXME */
+
+			}else{ // setpoint it not too low
+
+				/* Substracting accomulation is ok */
+				altitude_setpoint_accumulator +=  altitude_accomulator_precal;
+
+			}
+		}
+
+
+
+	}else{  // No problem , accumulate it up
+
+
+	altitude_setpoint_accumulator +=  altitude_accomulator_precal;
+
+	}
+
+	PID_Z -> setpoint = (float)altitude_setpoint_accumulator/4000.0f;
 
 
 	if( rc_command -> safety == ENGINE_ON) {
@@ -46,8 +92,11 @@ void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered
 
 	}else{ // MODE_1
 
-		PID_Z -> controller_status = CONTROLLER_DISABLE ;
-		PID_Zd -> controller_status = CONTROLLER_DISABLE ;
+		/* altitude controller is now enabled at all time */
+		PID_Z -> controller_status = CONTROLLER_ENABLE ;
+		PID_Zd -> controller_status = CONTROLLER_ENABLE ;
+		// PID_Z -> controller_status = CONTROLLER_DISABLE ;
+		// PID_Zd -> controller_status = CONTROLLER_DISABLE ;
 		PID_nav -> controller_status = CONTROLLER_DISABLE;
 
 	}
