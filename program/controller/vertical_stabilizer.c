@@ -1,6 +1,6 @@
 #include "vertical_stabilizer.h"
 
-
+extern float V_Z_reference;
 #define LOOP_DT  (0.00025f)
 
 void PID_vertical_Zd(vertical_pid_t* PID_control,vertical_data_t * vertical_filtered_data){
@@ -30,7 +30,7 @@ void PID_vertical_Z(vertical_pid_t* PID_control,vertical_data_t * vertical_filte
 
 	if( PID_control -> controller_status == CONTROLLER_ENABLE){
 
-		float error = (PID_control -> setpoint) - (vertical_filtered_data -> Z);
+		float error = (PID_control -> setpoint) - ((vertical_filtered_data -> Z)-V_Z_reference);
 
 		float P = error * (PID_control -> kp);
 

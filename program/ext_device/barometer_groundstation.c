@@ -62,7 +62,7 @@ static uint8_t chksum_OK_flag=0;
 
 static uint32_t rcv_err_count=0;
 
-float baro_ref_output_cm=0.0f;
+static float baro_ref_output_cm=0.0f;
 float V_Z_reference=0.0f;
 int32_t rcv_raw_data=0.0f;
 
@@ -153,8 +153,7 @@ void baro_reference_receive_task(void){
 				}
 				/* Debug session */
 
-
-
+			#ifdef BARO_REF_DEBUG
 				if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
 
 					buffer[5] = 0;buffer[6] = 0;buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
@@ -176,19 +175,11 @@ void baro_reference_receive_task(void){
 
 					usart2_dma_send(buffer);
 				}	
-
-
-
-
-
+			#endif
+				
 				/* end of debug session */
 
-
-
-
-
 				clear_rcv_stat();
-				LED_TOGGLE(LED1);
 
 				//BARO_REF_DEBUG("%d \r\n ",(int32_t)(baro_ref_output_cm*10000.0f));
 
@@ -220,8 +211,6 @@ void baro_reference_receive_task(void){
 		//BARO_REF_DEBUG("%c",c);
 
 		//vTaskDelayUntil( &xLastWakeTime, xFrequency );
-		LED_TOGGLE(LED2);
-
 	}
 
 }
