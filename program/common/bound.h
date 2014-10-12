@@ -10,6 +10,7 @@ static inline uint32_t bound_uint32(uint32_t, uint32_t , uint32_t );
 static inline int64_t bound_int64  (int64_t ,int64_t , int64_t );
 static inline uint64_t bound_uint64(uint64_t, uint64_t , uint64_t );
 static inline float bound_float    (float , float , float );
+static inline float gap_float_middle(float , float , float );
 
 
 
@@ -47,6 +48,24 @@ static inline uint64_t bound_uint64(uint64_t val, uint64_t min, uint64_t max)
 static inline float bound_float(float val, float min, float max)
 {
 	return val < min ? min : (val > max ? max : val);
+}
+
+static inline float gap_float_middle(float val, float min, float max)
+{
+
+	
+/* 	Generate gap range of data between max/min. 
+	Ex. min=19,max=21, 
+	input:		output:
+	22			21
+	21			20
+	19.5 		20
+	19			20
+	18			19
+	17			18
+*/
+
+	return val < min ? (val + (max-min)*0.5f) : (val > max ? (val - (max-min)*0.5f) : (min+max)*0.5f );
 }
 
 

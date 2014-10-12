@@ -12,7 +12,7 @@
 int16_t __nav_roll,__nav_pitch;
 int32_t __altitude_Zd;
 uint32_t __pAcc,__numSV;
-
+extern int32_t altitude_setpoint_accumulator;
 void flight_control_task(void)
 {
 	uint8_t buffer[100];
@@ -37,6 +37,8 @@ void flight_control_task(void)
 	vertical_pid_t pid_Zd_info;
 	vertical_pid_t pid_Z_info;
 	nav_pid_t pid_nav_info;
+
+	float test1111=0.0f;
 
 	PID_init(&pid_roll_info,&pid_pitch_info ,&pid_yaw_rate_info ,&pid_heading_info,&pid_Z_info ,&pid_Zd_info,&pid_nav_info);
 
@@ -78,14 +80,25 @@ void flight_control_task(void)
 			 	// 		(uint32_t)GPS_solution_info.numSV);
 				
 
-					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
-						(int32_t)(vertical_filtered_data.Zd* 1.0f),
-						(int32_t)(vertical_filtered_data.Z* 1.0f),
-						(int32_t)(pid_nav_info.output_roll* 1.0f),
-						(int32_t)(pid_nav_info.output_pitch* 1.0f),
-						(int32_t)GPS_velocity_NED.velE,
+					// /* for navigation debug */
+					// sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+					// 	(int32_t)(vertical_filtered_data.Zd* 1.0f),
+					// 	(int32_t)(vertical_filtered_data.Z* 1.0f),
+					// 	(int32_t)(pid_nav_info.output_roll* 1.0f),
+					// 	(int32_t)(pid_nav_info.output_pitch* 1.0f),
+					// 	(int32_t)GPS_velocity_NED.velE,
 
-			 			(uint32_t)GPS_solution_info.pAcc,
+			 	// 		(uint32_t)GPS_solution_info.pAcc,
+			 	// 		(uint32_t)GPS_solution_info.numSV);
+					test1111 =  gap_float_middle(my_rc.throttle_control_input-50.0f, -7.0f, 7.0f);
+					
+
+					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+						(int32_t)(vertical_filtered_data.Z* 1.0f),
+						(int32_t)(my_rc.throttle_control_input* 1.0f),
+						(int32_t)(test1111* 1.0f),
+						(int32_t)(altitude_setpoint_accumulator/4000),
+
 			 			(uint32_t)GPS_solution_info.numSV);
 
 					usart2_dma_send(buffer);
