@@ -97,7 +97,7 @@ void flight_control_task(void)
 						(int32_t)(pid_Z_info.setpoint),
 						(int32_t)(pid_Zd_info.integral),
 
-						(int32_t)(pid_Zd_info.output + 25.0f),
+						(int32_t)(pid_Zd_info.output + 30.0f),
 
 			 			(uint32_t)GPS_solution_info.numSV);
 

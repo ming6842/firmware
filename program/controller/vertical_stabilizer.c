@@ -11,13 +11,15 @@ void PID_vertical_Zd(vertical_pid_t* PID_control,vertical_data_t * vertical_filt
 
 		float P = error * (PID_control -> kp);
 
+		P = bound_float(P,PID_control -> out_min,PID_control -> out_max);
+
 		PID_control -> integral += (error * (PID_control -> ki)) * LOOP_DT;
 
-		PID_control -> integral = bound_float(PID_control -> integral,-10.0f,+30.0f);
+		PID_control -> integral = bound_float(PID_control -> integral,-10.0f,+25.0f);
+
 
 		(PID_control -> output) = P+(PID_control -> integral);
 
-		PID_control -> output = bound_float(PID_control -> output,PID_control -> out_min,PID_control -> out_max);
 
 	}else{
 

@@ -13,15 +13,16 @@ void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered
 	PID_pitch -> setpoint = (rc_command -> pitch_control_input) + (PID_nav -> output_pitch);
 
 	/* pre-calculate current accumulator */
-	altitude_accomulator_precal = (int32_t)(gap_float_middle(rc_command -> throttle_control_input-50.0f, -7.0f, 7.0f) * RC_ALTITUDE_STICK_SENSITIVITY);
+	altitude_accomulator_precal = (int32_t)(gap_float_middle(rc_command -> throttle_control_input-50.0f, -12.0f, 12.0f) * RC_ALTITUDE_STICK_SENSITIVITY);
 
 	/* check if setpoint is too far already */
+	float current_Z_setpoint = (float)altitude_setpoint_accumulator/4000.0f;
 
-	if(fabsf( PID_Z -> setpoint - vertical_filtered_data -> Z ) > Z_SETPOINT_DISTANCE_LIMIT){
+	if(fabsf( current_Z_setpoint - vertical_filtered_data -> Z ) > Z_SETPOINT_DISTANCE_LIMIT){
 
-		if(altitude_accomulator_precal>0){ // command to going higher case
+		if(altitude_accomulator_precal>=0){ // command to going higher case
 
-			if(( PID_Z -> setpoint -  vertical_filtered_data -> Z ) > 0){ // check if setpoint is already too high
+			if(( current_Z_setpoint -  vertical_filtered_data -> Z ) >= 0){ // check if setpoint is already too high
 
 				/* need failsafe mechanism here */
 
@@ -34,7 +35,7 @@ void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered
 
 		}else{  // commanding to go lower (altitude_accomulator_precal<0)
 
-			if(( PID_Z -> setpoint -  vertical_filtered_data -> Z ) < 0){  // check if setpoint is already too low
+			if(( current_Z_setpoint -  vertical_filtered_data -> Z ) < 0){  // check if setpoint is already too low
 
 				/* need failsafe mechanism here */
 				/*FIXME */
@@ -103,7 +104,12 @@ void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered
 
 		/* PID_Heading Suppressed */
 		PID_heading -> setpoint = attitude -> yaw;
-		/* PID_Zd Integral Suppressed */
+		/* PID_Z/Zd Suppressed */
+		PID_Z -> controller_status = CONTROLLER_DISABLE ;
+		PID_Zd -> controller_status = CONTROLLER_DISABLE ;
+
+		/* Clear the accumulator */
+		altitude_setpoint_accumulator = (int32_t)((vertical_filtered_data -> Z - Z_SETPOINT_DISTANCE_LIMIT*0.5f) * 4000.0f);
 	}
 
 
@@ -161,7 +167,7 @@ void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_p
 
 }
 
-#define IDLE_THROTTLE 25.0f 
+#define IDLE_THROTTLE 30.0f 
 
 void PID_output(radio_controller_t* rc_command,attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_yaw_rate,vertical_pid_t* PID_Zd){
 
