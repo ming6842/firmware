@@ -90,11 +90,14 @@ void flight_control_task(void)
 			 	// 		(uint32_t)GPS_solution_info.numSV);
 					
 
-					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
 						(int32_t)(vertical_filtered_data.Z* 1.0f),
 						(int32_t)(my_rc.throttle_control_input* 1.0f),
 						(int32_t)(altitude_setpoint_accumulator/4000),
 						(int32_t)(pid_Z_info.setpoint),
+						(int32_t)(pid_Zd_info.integral),
+
+						(int32_t)(pid_Zd_info.output + 25.0f),
 
 			 			(uint32_t)GPS_solution_info.numSV);
 

@@ -61,6 +61,8 @@ void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered
 
 	if( rc_command -> safety == ENGINE_ON) {
 
+
+		/* PID_Heading engage */
 		PID_heading -> setpoint = (PID_heading -> setpoint)+ (rc_command -> yaw_rate_control_input)*CONTROL_DT;
 
 		if((PID_heading -> setpoint ) > 360.0f){
@@ -72,34 +74,39 @@ void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered
 
 		}
 
+
+		if((rc_command -> mode) == MODE_3){
+
+			PID_Z -> controller_status = CONTROLLER_ENABLE ;
+			PID_Zd -> controller_status = CONTROLLER_ENABLE ;
+			PID_nav -> controller_status = CONTROLLER_ENABLE;
+
+		}else if((rc_command -> mode) == MODE_2){
+
+			PID_Z -> controller_status = CONTROLLER_ENABLE ;
+			PID_Zd -> controller_status = CONTROLLER_ENABLE ;
+			PID_nav -> controller_status = CONTROLLER_DISABLE;
+
+		}else{ // MODE_1
+
+			/* altitude controller is now enabled at all time */
+			PID_Z -> controller_status = CONTROLLER_ENABLE ;
+			PID_Zd -> controller_status = CONTROLLER_ENABLE ;
+			// PID_Z -> controller_status = CONTROLLER_DISABLE ;
+			// PID_Zd -> controller_status = CONTROLLER_DISABLE ;
+			PID_nav -> controller_status = CONTROLLER_DISABLE;
+
+		}
+
+
 	}else{
 
+		/* PID_Heading Suppressed */
 		PID_heading -> setpoint = attitude -> yaw;
+		/* PID_Zd Integral Suppressed */
 	}
 
 
-	if((rc_command -> mode) == MODE_3){
-
-		PID_Z -> controller_status = CONTROLLER_ENABLE ;
-		PID_Zd -> controller_status = CONTROLLER_ENABLE ;
-		PID_nav -> controller_status = CONTROLLER_ENABLE;
-
-	}else if((rc_command -> mode) == MODE_2){
-
-		PID_Z -> controller_status = CONTROLLER_ENABLE ;
-		PID_Zd -> controller_status = CONTROLLER_ENABLE ;
-		PID_nav -> controller_status = CONTROLLER_DISABLE;
-
-	}else{ // MODE_1
-
-		/* altitude controller is now enabled at all time */
-		PID_Z -> controller_status = CONTROLLER_ENABLE ;
-		PID_Zd -> controller_status = CONTROLLER_ENABLE ;
-		// PID_Z -> controller_status = CONTROLLER_DISABLE ;
-		// PID_Zd -> controller_status = CONTROLLER_DISABLE ;
-		PID_nav -> controller_status = CONTROLLER_DISABLE;
-
-	}
 
 }
 
