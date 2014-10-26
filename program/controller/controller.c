@@ -3,7 +3,7 @@
 int32_t altitude_setpoint_accumulator=0;
 
 #define RC_ALTITUDE_STICK_SENSITIVITY  2.0f
-#define Z_SETPOINT_DISTANCE_LIMIT 500.0f //CM unit
+#define Z_SETPOINT_DISTANCE_LIMIT 100.0f //CM unit
 
 void PID_rc_pass_command(attitude_t* attitude,vertical_data_t* vertical_filtered_data,attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_heading,vertical_pid_t* PID_Z,vertical_pid_t* PID_Zd,nav_pid_t* PID_nav,radio_controller_t* rc_command){
 
@@ -154,6 +154,8 @@ void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_p
 
 }
 
+#define IDLE_THROTTLE 25.0f 
+
 void PID_output(radio_controller_t* rc_command,attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_yaw_rate,vertical_pid_t* PID_Zd){
 
 motor_output_t motor;
@@ -172,10 +174,10 @@ motor_output_t motor;
 	motor. m12 =0.0;
 	if( rc_command -> safety == ENGINE_ON) {
 
-	motor . m1 = -10.0f + (rc_command->throttle_control_input) - (PID_roll->output) + (PID_pitch -> output) - (PID_yaw_rate -> output) + (PID_Zd -> output);
-	motor . m2 = -10.0f + (rc_command->throttle_control_input) + (PID_roll->output) + (PID_pitch -> output) + (PID_yaw_rate -> output) + (PID_Zd -> output);
-	motor . m3 = -10.0f + (rc_command->throttle_control_input) + (PID_roll->output) - (PID_pitch -> output) - (PID_yaw_rate -> output) + (PID_Zd -> output);
-	motor . m4 = -10.0f + (rc_command->throttle_control_input) - (PID_roll->output) - (PID_pitch -> output) + (PID_yaw_rate -> output) + (PID_Zd -> output);
+	motor . m1 = IDLE_THROTTLE - (PID_roll->output) + (PID_pitch -> output) - (PID_yaw_rate -> output) + (PID_Zd -> output);
+	motor . m2 = IDLE_THROTTLE + (PID_roll->output) + (PID_pitch -> output) + (PID_yaw_rate -> output) + (PID_Zd -> output);
+	motor . m3 = IDLE_THROTTLE + (PID_roll->output) - (PID_pitch -> output) - (PID_yaw_rate -> output) + (PID_Zd -> output);
+	motor . m4 = IDLE_THROTTLE - (PID_roll->output) - (PID_pitch -> output) + (PID_yaw_rate -> output) + (PID_Zd -> output);
 	set_pwm_motor(&motor);
 
 	LED_ON(LED3);
