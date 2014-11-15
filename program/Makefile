@@ -93,6 +93,7 @@ EXTERNAL_DEVICE_SRC = $(EXTERNAL_DEVICE)/AT24C04C.o \
 MCU_PERIPH_SRC =  \
 	$(MCU_PERIPH)/i2c.o \
 	$(MCU_PERIPH)/spi.o \
+	$(MCU_PERIPH)/can.o \
 	$(MCU_PERIPH)/gpio.o \
 	$(MCU_PERIPH)/tim.o \
 	$(MCU_PERIPH)/led.o \
@@ -137,6 +138,7 @@ OBJS=	./system_stm32f4xx.o \
 	$(CMSIS)/FastMathFunctions/arm_sin_f32.o \
         $(ST)/src/misc.o \
         $(ST)/src/stm32f4xx_rcc.o \
+        $(ST)/src/stm32f4xx_can.o \
         $(ST)/src/stm32f4xx_dma.o \
         $(ST)/src/stm32f4xx_flash.o \
         $(ST)/src/stm32f4xx_gpio.o \

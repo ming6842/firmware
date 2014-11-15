@@ -6,6 +6,7 @@
 #include "i2c.h"
 #include "usart.h"
 #include "spi.h"
+#include "can.h"
 #include "tim.h"
 #include "flight_controller.h"
 
@@ -73,6 +74,17 @@ int main(void)
 	i2c_Init();
 	usart2_dma_init();
 
+	cycle_led(1);
+	can1_init();
+	if(can_loopback_test()){
+
+		LED_ON(LED3);
+	}
+
+while(1){
+
+	LED_TOGGLE(LED4);
+}
 	/* Register the FreeRTOS task */
 	/* Flight control task */
 	xTaskCreate(
