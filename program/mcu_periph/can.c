@@ -46,7 +46,7 @@ void CAN1_Config(void)
   /* CAN Baudrate = 1 MBps (CAN clocked at 30 MHz) */
   CAN_InitStructure.CAN_BS1 = CAN_BS1_6tq;
   CAN_InitStructure.CAN_BS2 = CAN_BS2_8tq;
-  CAN_InitStructure.CAN_Prescaler = 20;
+  CAN_InitStructure.CAN_Prescaler = 2;
   CAN_Init(CAN1, &CAN_InitStructure);
 
   /* CAN filter init */
@@ -188,8 +188,15 @@ void CAN1_Transmit(void){
   TxMessage.ExtId = 0x01;
   TxMessage.RTR = CAN_RTR_DATA;
   TxMessage.IDE = CAN_ID_STD;
-  TxMessage.DLC = 1;
+  TxMessage.DLC = 8;
   TxMessage.Data[0] = 64;
+  TxMessage.Data[1] = 64;
+  TxMessage.Data[2] = 64;
+  TxMessage.Data[3] = 64;
+  TxMessage.Data[4] = 64;
+  TxMessage.Data[5] = 64;
+  TxMessage.Data[6] = 64;
+  TxMessage.Data[7] = 64;
   CAN_Transmit(CANx, &TxMessage);
 
 }
@@ -212,7 +219,7 @@ void CAN1_RX0_IRQHandler(void)
 {
   CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
   
-  if ((RxMessage.StdId == 0x321)&&(RxMessage.IDE == CAN_ID_STD) && (RxMessage.DLC == 1))
+  if ((RxMessage.StdId == 0x321)&&(RxMessage.IDE == CAN_ID_STD) && (RxMessage.DLC == 8))
   {
   		LED_TOGGLE(LED3);
   }
