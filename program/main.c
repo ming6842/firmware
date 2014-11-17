@@ -85,12 +85,6 @@ while(1){
 
 	CAN1_Transmit();
 
-	if( CAN_MessagePending(CAN1, CAN_FIFO0) > 1){
-
-
-  		CAN_Receive(CAN1, CAN_FIFO0, &MainRxMessage);
-		LED_TOGGLE(LED3);
-	}
 
 	Delay_1us(10000);
 	LED_TOGGLE(LED4);

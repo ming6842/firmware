@@ -212,13 +212,8 @@ void CAN1_RX0_IRQHandler(void)
 {
   CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
   
-  while(1){
-
-  	LED_TOGGLE(LED3);
-  }
-
   if ((RxMessage.StdId == 0x321)&&(RxMessage.IDE == CAN_ID_STD) && (RxMessage.DLC == 1))
   {
-
+  		LED_TOGGLE(LED3);
   }
 }
