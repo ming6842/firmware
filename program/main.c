@@ -54,6 +54,7 @@ void vApplicationMallocFailedHook(void)
 	while(1);
 }
 
+CanRxMsg MainRxMessage;
 int main(void)
 {
 	vSemaphoreCreateBinary(serial_tx_wait_sem);
@@ -75,14 +76,22 @@ int main(void)
 	usart2_dma_init();
 
 	cycle_led(1);
-	can1_init();
-	if(can_loopback_test()){
+	//can1_init();
+	CAN1_Config();
 
-		LED_ON(LED3);
-	}
-
+	CAN1_Transmit();
 while(1){
 
+	CAN1_Transmit();
+
+	if( CAN_MessagePending(CAN1, CAN_FIFO0) > 1){
+
+
+  		CAN_Receive(CAN1, CAN_FIFO0, &MainRxMessage);
+		LED_TOGGLE(LED3);
+	}
+
+	Delay_1us(10000);
 	LED_TOGGLE(LED4);
 }
 	/* Register the FreeRTOS task */
