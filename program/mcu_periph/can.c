@@ -192,9 +192,6 @@ void CAN1_Transmit(void){
   TxMessage.Data[0] = 64;
   CAN_Transmit(CANx, &TxMessage);
 
-  /*/ WHY? */
-  /* Enable FIFO 0 message pending Interrupt */
-  CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
 }
 
 void CAN1_NVIC_Config(void)

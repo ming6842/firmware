@@ -77,6 +77,7 @@ int main(void)
 
 	cycle_led(1);
 	//can1_init();
+	CAN1_NVIC_Config();
 	CAN1_Config();
 
 	CAN1_Transmit();
