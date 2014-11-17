@@ -86,7 +86,7 @@ while(1){
 	CAN1_Transmit();
 
 
-	Delay_1us(25);
+	Delay_1us(100000);
 	LED_TOGGLE(LED4);
 }
 	/* Register the FreeRTOS task */
