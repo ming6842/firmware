@@ -73,6 +73,8 @@ int main(void)
 	vertical_pid_t pid_Z_info;
 	nav_pid_t pid_nav_info;
 
+	/* Yuchi test */
+	imu_data_t imu_super_lowpass_data;
 
 	PID_init(&pid_roll_info,&pid_pitch_info ,&pid_yaw_rate_info ,&pid_heading_info,&pid_Z_info ,&pid_Zd_info,&pid_nav_info);
 
@@ -251,9 +253,12 @@ int main(void)
 				buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
 
 
-				sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,\r\n",
 
-					(int32_t)(imu_filtered_data.gyro[0] 		* 100.0f),
+
+				sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,\r\n",
+
+					(int32_t)(imu_super_lowpass_data.gyro[2] 		* 100.0f),
+					(int32_t)(imu_filtered_data.gyro[2] 		* 100.0f),
 					(int32_t)(imu_filtered_data.gyro[1] 		* 100.0f),
 					(int32_t)(imu_filtered_data.gyro[2] 		* 100.0f),
 					(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
@@ -269,6 +274,10 @@ int main(void)
 		}
 
 
+
+				imu_super_lowpass_data.gyro[0] = lowpass_float(&imu_super_lowpass_data.gyro[0],&imu_raw_data.gyro[0],0.005f);
+				imu_super_lowpass_data.gyro[1] = lowpass_float(&imu_super_lowpass_data.gyro[1],&imu_raw_data.gyro[1],0.005f);
+				imu_super_lowpass_data.gyro[2] = lowpass_float(&imu_super_lowpass_data.gyro[2],&imu_raw_data.gyro[2],0.005f);
 
 
 		attitude_update(&attitude,&imu_filtered_data, &predicted_g_data,&imu_unscaled_data,&imu_raw_data,&imu_offset);
