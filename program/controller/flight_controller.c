@@ -52,7 +52,7 @@ void flight_control_task(void)
 #endif
 	imu_initialize(&imu_offset,30000);
 
-	check_rc_safety_init(&my_rc);
+	//check_rc_safety_init(&my_rc);
 #if IS_USE_GPS
 	lea6h_set_USART_IT();
 #endif 
@@ -64,7 +64,7 @@ void flight_control_task(void)
 			LED_OFF(LED4);
 			LED_OFF(TOGGLE_DEBUG);
 
-			if(GPS_solution_info.updatedFlag){
+			//if(GPS_solution_info.updatedFlag){
 				if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
 
 					buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
@@ -92,7 +92,7 @@ void flight_control_task(void)
 					usart2_dma_send(buffer);
 				}	
 			 	GPS_solution_info.updatedFlag=0;
-			}
+			//}
 
 			/*push nav message to a queue*/
 			__altitude_Zd = (int32_t)vertical_filtered_data.Zd;

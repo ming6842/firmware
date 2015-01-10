@@ -17,11 +17,16 @@
 #define CAN_TX_SOURCE              GPIO_PinSource1     
 
 void can1_init(void);
+uint8_t can_loopback_test(void);
 
 void CAN1_Config(void);
 void CAN1_Transmit(void);
-uint8_t can_loopback_test(void);
 void CAN1_NVIC_Config(void);
 void CAN1_RX0_IRQHandler(void);
+
+void CAN2_Config(void);
+void CAN2_Transmit(void);
+void CAN2_NVIC_Config(void);
+void CAN2_RX0_IRQHandler(void);
 
 #endif

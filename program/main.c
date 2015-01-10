@@ -75,21 +75,9 @@ int main(void)
 	i2c_Init();
 	usart2_dma_init();
 
-	cycle_led(1);
-	//can1_init();
-	CAN1_NVIC_Config();
-	CAN1_Config();
+	CAN2_Config();
+	CAN2_NVIC_Config();
 
-	CAN1_Transmit();
-while(1){
-
-	CAN1_Transmit();
-
-
-	//Delay_1us(100000);
-	Delay_1us(150);
-	LED_TOGGLE(LED4);
-}
 	/* Register the FreeRTOS task */
 	/* Flight control task */
 	xTaskCreate(
