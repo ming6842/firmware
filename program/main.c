@@ -21,6 +21,12 @@
 #include "system_time.h"
 #include "lea6h_ubx.h"
 #include "simple_navigation.h"
+
+#include "fatfs_sd.h"
+#include "ff.h"
+#include "integer.h"
+#include <string.h>
+
 extern uint8_t estimator_trigger_flag;
 
 /* FreeRTOS */
@@ -54,6 +60,7 @@ void vApplicationMallocFailedHook(void)
 	while(1);
 }
 
+
 CanRxMsg MainRxMessage;
 int main(void)
 {
@@ -64,7 +71,7 @@ int main(void)
 	/* Global data initialazition */
 	init_global_data();
 
-	/* Hardware initialization */
+	 // Hardware initialization 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 	gpio_rcc_init();
 	led_init();
@@ -74,20 +81,68 @@ int main(void)
 	init_pwm_motor();
 	i2c_Init();
 	usart2_dma_init();
-
 	cycle_led(1);
 	//can1_init();
 	CAN1_NVIC_Config();
 	CAN1_Config();
 
 	CAN1_Transmit();
+
+/* File system object structure (FATFS) */
+FATFS     fs;
+/* File object structure (FIL) */
+FIL       fsrc;
+/* File function return code (FRESULT) */
+FRESULT   res;
+/* File read/write count*/
+UINT      bw;
+
+
+uint8_t buffer[1024]="FatFs is a generic FAT file system module for small embedded systems.The FatFs is written in compliance with ANSI C and completely separated from the disk I/O layer.Therefore it is independent of hardware architecture.It can be incorporated into low cost microcontrollers,such as AVR, 8051, PIC, ARM, Z80, 68k ... without change.\r\n\
+FatFs is a generic FAT file system module for small embedded systems.The FatFs is written in compliance with ANSI C and completely separated from the disk I/O layer.Therefore it is independent of hardware architecture.It can be incorporated into low cost microcontrollers,such as AVR, 8051, PIC, ARM, Z80, 68k ... without change.\r\n\
+FatFs is a generic FAT file system module for small embedded systems.The FatFs is written in compliance with ANSI C and completely separated from the disk I/O layer.Therefore it is independent of hardware architecture.It can be incorporated into low cost microcontrollers,such as AVR, 8051, PIC, ARM, Z80, 68k ... without change.\r\n";                                                         
+
+uint8_t words[20];
+memset(words,' ',sizeof(words));
+uint8_t  retry = 0xFF;
+
+  do{
+    res = f_mount(&fs,"0:",1);
+  }while(res && --retry);
+  sprintf((char*)&words,"%d\r\n",res);
+  uart8_puts(words);
+  retry = 0xFF;
+  do{
+    res = f_open(&fsrc, "data.txt", FA_CREATE_ALWAYS);
+  }while(res && --retry);
+  sprintf((char*)&words,"%d\r\n",res);
+  uart8_puts(words);
+  retry = 0xFF;
+  do{
+    res = f_open(&fsrc, "data.txt", FA_WRITE );
+  }while(res && --retry);
+  sprintf((char*)&words,"%d\r\n",res);
+  uart8_puts(words);
+
+  uint8_t count = 0;
+
 while(1){
 
-	CAN1_Transmit();
-
-
-	Delay_1us(100000);
-	LED_TOGGLE(LED4);
+      do{
+          res = f_write(&fsrc,&buffer,strlen((char*)&buffer),&bw);
+          if(res){
+            LED_TOGGLE(LED3);
+            break;
+          }
+      }
+      while (bw < strlen((char*)&buffer));   
+      count ++ ;
+      if(count>=100){
+      f_sync(&fsrc);    
+      count = 0; 
+      LED_TOGGLE(LED4);  
+      }
+	
 }
 	/* Register the FreeRTOS task */
 	/* Flight control task */
