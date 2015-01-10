@@ -105,19 +105,35 @@ void hmc5983_apply_mag_calibration(imu_calibrated_offset_t *imu_offset){
 
 
 
-	imu_offset -> mag_scale[0]=1.0f;
-	imu_offset -> mag_scale[1]=1.0f;
-	imu_offset -> mag_scale[2]=1.0f;
+	#ifndef USE_CAN_MAGNETOMETER
+			imu_offset -> mag_scale[0]=1.0f;
+			imu_offset -> mag_scale[1]=1.0f;
+			imu_offset -> mag_scale[2]=1.0f;
 
-	imu_offset -> mag[0]=(int16_t)(-32);
-	imu_offset -> mag[1]=(int16_t)(-174);
-	imu_offset -> mag[2]=(int16_t)(-215);
+			imu_offset -> mag[0]=(int16_t)(-32);
+			imu_offset -> mag[1]=(int16_t)(-174);
+			imu_offset -> mag[2]=(int16_t)(-215);
+	#else
+			imu_offset -> mag_scale[0]=1.0f;
+			imu_offset -> mag_scale[1]=1.0f;
+			imu_offset -> mag_scale[2]=1.0f;
+
+			imu_offset -> mag[0]=(int16_t)(9);
+			imu_offset -> mag[1]=(int16_t)(-234);
+			imu_offset -> mag[2]=(int16_t)(-26);
+
+
+	#endif
+
+
 }
 
 
 void hmc5983_initialize_system(imu_calibrated_offset_t *imu_offset){
 
-	hmc5983_initialize_config();
+	#ifndef USE_CAN_MAGNETOMETER
+		hmc5983_initialize_config();
+	#endif
 	hmc5983_apply_mag_calibration(imu_offset);
 
 }
@@ -128,20 +144,26 @@ void hmc5983_CAN_UpdateIMU(imu_unscaled_data_t *imu_raw_data){
 	CanRxMsg RxMessage;
  	uint8_t hmc5983_buffer[6];
 
-    RxMessage =  CAN2_PassRXMessage();
+ 		if( CAN2_CheckMessageStatusFlag(CAN_MESSAGE_MAGNETOMETER) == 1){
+
+    			RxMessage =  CAN2_PassRXMessage();
+				CAN2_ClearMessageStatusFlag(CAN_MESSAGE_MAGNETOMETER);
+
+				hmc5983_buffer[0] = RxMessage.Data[0];
+				hmc5983_buffer[1] = RxMessage.Data[1];
+				hmc5983_buffer[2] = RxMessage.Data[2];
+				hmc5983_buffer[3] = RxMessage.Data[3];
+				hmc5983_buffer[4] = RxMessage.Data[4];
+				hmc5983_buffer[5] = RxMessage.Data[5];
 
 
-	hmc5983_buffer[0] = RxMessage.Data[0];
-	hmc5983_buffer[1] = RxMessage.Data[1];
-	hmc5983_buffer[2] = RxMessage.Data[2];
-	hmc5983_buffer[3] = RxMessage.Data[3];
-	hmc5983_buffer[4] = RxMessage.Data[4];
-	hmc5983_buffer[5] = RxMessage.Data[5];
+				imu_raw_data->mag[0] = -(int16_t)(((uint16_t)hmc5983_buffer[0] << 8) | (uint16_t)hmc5983_buffer[1]);
+				imu_raw_data->mag[2] = -(int16_t)(((uint16_t)hmc5983_buffer[2] << 8) | (uint16_t)hmc5983_buffer[3]);
+				imu_raw_data->mag[1] =  (int16_t)(((uint16_t)hmc5983_buffer[4] << 8) | (uint16_t)hmc5983_buffer[5]);
 
 
-	imu_raw_data->mag[0] = -(int16_t)(((uint16_t)hmc5983_buffer[0] << 8) | (uint16_t)hmc5983_buffer[1]);
-	imu_raw_data->mag[2] = -(int16_t)(((uint16_t)hmc5983_buffer[2] << 8) | (uint16_t)hmc5983_buffer[3]);
-	imu_raw_data->mag[1] =  (int16_t)(((uint16_t)hmc5983_buffer[4] << 8) | (uint16_t)hmc5983_buffer[5]);
+ 		}
+
 
 
 }

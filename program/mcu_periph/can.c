@@ -236,9 +236,9 @@ CanRxMsg CAN2_PassRXMessage(void){
 }
 
 
-uint8_t CAN2_CheckStatusFlag(uint8_t messageID){
+uint8_t CAN2_CheckMessageStatusFlag(uint8_t messageID){
 
-    if( messageID == 1){
+    if( messageID == CAN_MESSAGE_MAGNETOMETER){
 
           if ( canMessageFlag.MagnetometerUpdated == 1)
           {
@@ -250,7 +250,7 @@ uint8_t CAN2_CheckStatusFlag(uint8_t messageID){
 
 
 
-    }else if(messageID == 2){
+    }else if(messageID == CAN_MESSAGE_BAROMETER){
 
 
           if ( canMessageFlag.BarometerUpdated == 1)
@@ -263,4 +263,17 @@ uint8_t CAN2_CheckStatusFlag(uint8_t messageID){
     }
 
     return 0;
+}
+
+void CAN2_ClearMessageStatusFlag(uint8_t messageID){
+
+    if( messageID == CAN_MESSAGE_MAGNETOMETER){
+
+          canMessageFlag.MagnetometerUpdated = 0;
+
+    }else if(messageID == CAN_MESSAGE_BAROMETER){
+
+
+          canMessageFlag.BarometerUpdated = 0;
+    }
 }

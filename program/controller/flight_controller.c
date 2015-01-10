@@ -78,15 +78,27 @@ void flight_control_task(void)
 			 	// 		(uint32_t)GPS_solution_info.numSV);
 				
 
-					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
-						(int32_t)(vertical_filtered_data.Zd* 1.0f),
-						(int32_t)(vertical_filtered_data.Z* 1.0f),
-						(int32_t)(pid_Zd_info.integral* 10.0f),
-						(int32_t)(pid_nav_info.output_roll* 1.0f),
-						(int32_t)(pid_nav_info.output_pitch* 1.0f),
-						(int32_t)GPS_velocity_NED.velE,
+				// 	sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+				// 		(int32_t)(attitude.yaw* 1.0f),
+				// 		(int32_t)(vertical_filtered_data.Zd* 1.0f),
+				// 		(int32_t)(vertical_filtered_data.Z* 1.0f),
+				// 		(int32_t)(pid_Zd_info.integral* 10.0f),
+				// 		(int32_t)(pid_nav_info.output_roll* 1.0f),
+				// 		(int32_t)(pid_nav_info.output_pitch* 1.0f),
+				// 		(int32_t)GPS_velocity_NED.velE,
 
-			 			(uint32_t)GPS_solution_info.pAcc,
+			 // 			(uint32_t)GPS_solution_info.pAcc,
+			 // 			(uint32_t)GPS_solution_info.numSV);
+
+				// 	usart2_dma_send(buffer);
+				// }	
+
+					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+						(int32_t)(attitude.yaw* 1.0f),
+						(int32_t)(imu_unscaled_data.mag[0]* 1.0f),
+						(int32_t)(imu_unscaled_data.mag[1]* 1.0f),
+						(int32_t)(imu_unscaled_data.mag[2]* 1.0f),
+
 			 			(uint32_t)GPS_solution_info.numSV);
 
 					usart2_dma_send(buffer);

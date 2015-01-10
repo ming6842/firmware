@@ -38,7 +38,7 @@ typedef struct imu_calibrated_offset_t {
 	#else
 			#define magnetometer_initialize_config() ;
 			#define magnetometer_initialize(offset) hmc5983_initialize_system(offset)
-			#define magnetometer_update(rawdata) ;
+			#define magnetometer_update(rawdata) hmc5983_CAN_UpdateIMU(rawdata)
 			#define magnetometer_scale_data(rawdata,scaled_data,offset) hmc5983_convert_to_scale(rawdata, scaled_data,offset)
 	
 	#endif
