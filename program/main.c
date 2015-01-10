@@ -54,7 +54,6 @@ void vApplicationMallocFailedHook(void)
 	while(1);
 }
 
-CanRxMsg MainRxMessage;
 int main(void)
 {
 	vSemaphoreCreateBinary(serial_tx_wait_sem);
