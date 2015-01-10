@@ -16,6 +16,15 @@
 #define CAN_RX_SOURCE              GPIO_PinSource0
 #define CAN_TX_SOURCE              GPIO_PinSource1     
 
+
+typedef struct can_message_receivedFlag_t {
+	uint8_t MagnetometerUpdated;
+	uint8_t BarometerUpdated;
+} can_message_receivedFlag_t;
+
+
+
+
 void can1_init(void);
 uint8_t can_loopback_test(void);
 
@@ -28,5 +37,9 @@ void CAN2_Config(void);
 void CAN2_Transmit(void);
 void CAN2_NVIC_Config(void);
 void CAN2_RX0_IRQHandler(void);
+
+
+CanRxMsg CAN2_PassRXMessage(void);
+uint8_t CAN2_CheckStatusFlag(uint8_t messageID);
 
 #endif

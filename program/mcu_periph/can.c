@@ -165,7 +165,7 @@ void CAN2_Config(void)
   CAN_Init(CAN2, &CAN_InitStructure);
 
   /* CAN filter init */
-  CAN_FilterInitStructure.CAN_FilterNumber = 0;
+  CAN_FilterInitStructure.CAN_FilterNumber = 14;
 /* USE_CAN2 */
   CAN_FilterInitStructure.CAN_FilterMode = CAN_FilterMode_IdMask;
   CAN_FilterInitStructure.CAN_FilterScale = CAN_FilterScale_32bit;
@@ -194,14 +194,15 @@ void CAN2_NVIC_Config(void)
   NVIC_Init(&NVIC_InitStructure);
 }
 CanRxMsg CAN2RxMessage;
-
+can_message_receivedFlag_t canMessageFlag;
 void CAN2_RX0_IRQHandler(void)
 {
   CAN_Receive(CAN2, CAN_FIFO0, &CAN2RxMessage);
-  
-  if ((CAN2RxMessage.StdId == 0x321)&&(CAN2RxMessage.IDE == CAN_ID_STD))
+      
+
+  if (((CAN2RxMessage.ExtId & 0xFFFF0000) == 0x00030000)&&(CAN2RxMessage.IDE == CAN_ID_EXT ))
   {
-      LED_TOGGLE(LED3);
+      canMessageFlag.MagnetometerUpdated = 1;
   }
 }
 
@@ -226,4 +227,40 @@ void CAN2_Transmit(void){
   TxMessage.Data[7] = 64;
   CAN_Transmit(CAN2, &TxMessage);
 
+}
+
+CanRxMsg CAN2_PassRXMessage(void){
+
+
+  return CAN2RxMessage;
+}
+
+
+uint8_t CAN2_CheckStatusFlag(uint8_t messageID){
+
+    if( messageID == 1){
+
+          if ( canMessageFlag.MagnetometerUpdated == 1)
+          {
+            return 1;
+          }else{
+
+            return 0;
+          }
+
+
+
+    }else if(messageID == 2){
+
+
+          if ( canMessageFlag.BarometerUpdated == 1)
+          {
+            return 1;
+          }else{
+
+            return 0;
+          }
+    }
+
+    return 0;
 }

@@ -121,3 +121,27 @@ void hmc5983_initialize_system(imu_calibrated_offset_t *imu_offset){
 	hmc5983_apply_mag_calibration(imu_offset);
 
 }
+
+
+void hmc5983_CAN_UpdateIMU(imu_unscaled_data_t *imu_raw_data){
+
+	CanRxMsg RxMessage;
+ 	uint8_t hmc5983_buffer[6];
+
+    RxMessage =  CAN2_PassRXMessage();
+
+
+	hmc5983_buffer[0] = RxMessage.Data[0];
+	hmc5983_buffer[1] = RxMessage.Data[1];
+	hmc5983_buffer[2] = RxMessage.Data[2];
+	hmc5983_buffer[3] = RxMessage.Data[3];
+	hmc5983_buffer[4] = RxMessage.Data[4];
+	hmc5983_buffer[5] = RxMessage.Data[5];
+
+
+	imu_raw_data->mag[0] = -(int16_t)(((uint16_t)hmc5983_buffer[0] << 8) | (uint16_t)hmc5983_buffer[1]);
+	imu_raw_data->mag[2] = -(int16_t)(((uint16_t)hmc5983_buffer[2] << 8) | (uint16_t)hmc5983_buffer[3]);
+	imu_raw_data->mag[1] =  (int16_t)(((uint16_t)hmc5983_buffer[4] << 8) | (uint16_t)hmc5983_buffer[5]);
+
+
+}
