@@ -19,5 +19,11 @@ xSemaphoreHandle SD_sem;
 void SD_data_Task(void *pvParameters);
 void SD_write_Task(void *pvParameters);
 
+extern uint8_t buffer1[5000];
+extern uint8_t buffer2[5000];   
+
+
+
+
 
 #endif
