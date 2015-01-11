@@ -97,7 +97,7 @@ void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_p
 }
 
 
-	extern motor_output_t motor_for_yu_chi_data_out;
+	extern motor_output_t motor_for_data_output;
 
 void PID_output(radio_controller_t* rc_command,attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_yaw_rate,vertical_pid_t* PID_Zd){
 
@@ -136,6 +136,6 @@ motor_output_t motor;
 	LED_OFF(LED3);
 	}
 
-	motor_for_yu_chi_data_out = motor;
+	motor_for_data_output = motor;
 
 }

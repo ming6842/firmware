@@ -31,7 +31,7 @@ extern uint8_t estimator_trigger_flag;
 #define OUTPUT_CONTROLLER_ALTITUDE 8
 
 /* temporary use */
-motor_output_t motor_for_yu_chi_data_out;
+motor_output_t motor_for_data_output;
 
 void gpio_rcc_init(void);
 
@@ -46,7 +46,7 @@ int main(void)
 {
 	uint8_t buffer[200];
 	uint32_t transmit_delay_count=0;
-	uint8_t output_mode = OUTPUT_YU_CHI;
+	uint8_t output_mode = OUTPUT_CONTROLLER_ATTITUDE;
 	/* State estimator initialization */
 	imu_unscaled_data_t imu_unscaled_data;
 	imu_data_t imu_raw_data;
@@ -173,10 +173,10 @@ int main(void)
 					(int32_t)(my_rc.pitch_control_input  		* 100.0f),
 					(int32_t)(my_rc.throttle_control_input  	* 100.0f),
 					(int32_t)(my_rc.yaw_rate_control_input  	* 100.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m2  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m3  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m4  	* 10.0f));
+					(int32_t)(motor_for_data_output.m1  	* 10.0f),
+					(int32_t)(motor_for_data_output.m2  	* 10.0f),
+					(int32_t)(motor_for_data_output.m3  	* 10.0f),
+					(int32_t)(motor_for_data_output.m4  	* 10.0f));
 
 				usart2_dma_send(buffer);
 				transmit_delay_count = 0;
@@ -263,10 +263,10 @@ int main(void)
 					(int32_t)(imu_filtered_data.gyro[2] 		* 100.0f),
 					(int32_t)(imu_filtered_data.gyro[1] 		* 100.0f),
 					(int32_t)(imu_filtered_data.gyro[2] 		* 100.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m2  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m3  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m4  	* 10.0f));
+					(int32_t)(motor_for_data_output.m1  	* 10.0f),
+					(int32_t)(motor_for_data_output.m2  	* 10.0f),
+					(int32_t)(motor_for_data_output.m3  	* 10.0f),
+					(int32_t)(motor_for_data_output.m4  	* 10.0f));
 
 				usart2_dma_send(buffer);
 				transmit_delay_count = 0;
@@ -295,10 +295,10 @@ int main(void)
 					(int32_t)(attitude.roll 		* 100.0f),
 					(int32_t)(pid_roll_info.setpoint		* 100.0f),
 					(int32_t)(pid_roll_info.output		* 100.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m2  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m3  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m4  	* 10.0f));
+					(int32_t)(motor_for_data_output.m1  	* 10.0f),
+					(int32_t)(motor_for_data_output.m2  	* 10.0f),
+					(int32_t)(motor_for_data_output.m3  	* 10.0f),
+					(int32_t)(motor_for_data_output.m4  	* 10.0f));
 
 				usart2_dma_send(buffer);
 				transmit_delay_count = 0;
@@ -331,10 +331,10 @@ int main(void)
 					(int32_t)(pid_Zd_info.setpoint				* 100.0f),
 					(int32_t)(pid_Zd_info.output				* 100.0f),
 					(int32_t)(pid_Zd_info.integral				* 100.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m2  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m3  	* 10.0f),
-					(int32_t)(motor_for_yu_chi_data_out.m4  	* 10.0f));
+					(int32_t)(motor_for_data_output.m1  	* 10.0f),
+					(int32_t)(motor_for_data_output.m2  	* 10.0f),
+					(int32_t)(motor_for_data_output.m3  	* 10.0f),
+					(int32_t)(motor_for_data_output.m4  	* 10.0f));
 
 				usart2_dma_send(buffer);
 				transmit_delay_count = 0;
