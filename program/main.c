@@ -305,6 +305,42 @@ int main(void)
 				LED_TOGGLE(LED1);
 			}	
 
+		}else if(output_mode == OUTPUT_CONTROLLER_ALTITUDE){
+
+			transmit_delay_count++;
+			if ((DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) && (transmit_delay_count >= 40)){
+
+				uint8_t iii=0;
+
+				for(iii=0;iii<190;iii++){
+
+					buffer[iii]=0;
+
+				};
+				buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
+
+
+
+
+				sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,\r\n",
+
+					(int32_t)(vertical_filtered_data.Z			* 100.0f),
+					(int32_t)(pid_Z_info.setpoint				* 100.0f),
+					(int32_t)(pid_Z_info.output					* 100.0f),
+					(int32_t)(vertical_filtered_data.Zd 		* 100.0f),
+					(int32_t)(pid_Zd_info.setpoint				* 100.0f),
+					(int32_t)(pid_Zd_info.output				* 100.0f),
+					(int32_t)(pid_Zd_info.integral				* 100.0f),
+					(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
+					(int32_t)(motor_for_yu_chi_data_out.m2  	* 10.0f),
+					(int32_t)(motor_for_yu_chi_data_out.m3  	* 10.0f),
+					(int32_t)(motor_for_yu_chi_data_out.m4  	* 10.0f));
+
+				usart2_dma_send(buffer);
+				transmit_delay_count = 0;
+				LED_TOGGLE(LED1);
+			}	
+
 		}
 
 
