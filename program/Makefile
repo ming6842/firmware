@@ -205,8 +205,10 @@ flash:
 	st-flash write $(BIN_IMAGE) 0x8000000
 
 #Make openocd
-openocd: flash
-	openocd -f ../debug/openocd.cfg
+openocd: 
+	openocd -f interface/stlink-v2.cfg  \
+	-c "transport select hla_swd" \
+	-f target/stm32f4x_stlink.cfg 
 
 #Make cgdb
 cgdb:
