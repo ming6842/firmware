@@ -148,12 +148,23 @@ clean:
 	rm -rf $(BIN_IMAGE)
 
 #Make flash
-flash:
-	st-flash write $(BIN_IMAGE) 0x8000000
+#flash:
+#	st-flash write $(BIN_IMAGE) 0x8000000
 
 #Make openocd
 openocd: flash
 	openocd -f ../debug/openocd.cfg
+
+flash_openocd:
+	openocd -f interface/stlink-v2.cfg \
+	-c "transport select hla_swd" \
+	-f target/stm32f4x_stlink.cfg \
+	-c "init" \
+	-c "reset init" \
+	-c "halt" \
+	-c "flash write_image erase $(PROJECT).elf" \
+	-c "verify_image $(PROJECT).elf" \
+	-c "reset run" -c shutdown
 
 #Make cgdb
 cgdb:
@@ -169,4 +180,4 @@ astyle:
 	astyle -r --exclude=lib  *.c *.h
 #============================================================================#
 
-.PHONY:all clean flash openocd gdbauto gdbtui cgdb astyle
+.PHONY:all clean openocd gdbauto gdbtui cgdb astyle

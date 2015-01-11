@@ -27,6 +27,8 @@ extern uint8_t estimator_trigger_flag;
 #define OUTPUT_GPS 4
 #define OUTPUT_RC 5
 #define OUTPUT_YU_CHI 6
+#define OUTPUT_CONTROLLER_ATTITUDE 7
+#define OUTPUT_CONTROLLER_ALTITUDE 8
 
 /* temporary use */
 motor_output_t motor_for_yu_chi_data_out;
@@ -261,6 +263,38 @@ int main(void)
 					(int32_t)(imu_filtered_data.gyro[2] 		* 100.0f),
 					(int32_t)(imu_filtered_data.gyro[1] 		* 100.0f),
 					(int32_t)(imu_filtered_data.gyro[2] 		* 100.0f),
+					(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
+					(int32_t)(motor_for_yu_chi_data_out.m2  	* 10.0f),
+					(int32_t)(motor_for_yu_chi_data_out.m3  	* 10.0f),
+					(int32_t)(motor_for_yu_chi_data_out.m4  	* 10.0f));
+
+				usart2_dma_send(buffer);
+				transmit_delay_count = 0;
+				LED_TOGGLE(LED1);
+			}	
+
+		}else if(output_mode == OUTPUT_CONTROLLER_ATTITUDE){
+
+			transmit_delay_count++;
+			if ((DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) && (transmit_delay_count >= 40)){
+
+				uint8_t iii=0;
+
+				for(iii=0;iii<190;iii++){
+
+					buffer[iii]=0;
+
+				};
+				buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
+
+
+
+
+				sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,\r\n",
+
+					(int32_t)(attitude.roll 		* 100.0f),
+					(int32_t)(pid_roll_info.setpoint		* 100.0f),
+					(int32_t)(pid_roll_info.output		* 100.0f),
 					(int32_t)(motor_for_yu_chi_data_out.m1  	* 10.0f),
 					(int32_t)(motor_for_yu_chi_data_out.m2  	* 10.0f),
 					(int32_t)(motor_for_yu_chi_data_out.m3  	* 10.0f),
