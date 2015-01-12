@@ -326,7 +326,7 @@ int main(void)
 				sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,\r\n",
 
 					(int32_t)(vertical_filtered_data.Z			* 100.0f),
-					(int32_t)(pid_Z_info.setpoint				* 100.0f),
+					(int32_t)((pid_Z_info.setpoint + Z_offset_for_test)	* 100.0f),
 					(int32_t)(pid_Z_info.output					* 100.0f),
 					(int32_t)(vertical_filtered_data.Zd 		* 100.0f),
 					(int32_t)(pid_Zd_info.setpoint				* 100.0f),

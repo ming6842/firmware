@@ -61,13 +61,13 @@ void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_p
 	// PID_pitch -> setpoint =0.0;
 
 	/* for the new cascaded controller */
-	PID_roll -> kp =4.50f;
-	PID_roll -> kd =0.070f;
+	PID_roll -> kp =4.20f;
+	PID_roll -> kd =0.065f;
 	PID_roll -> ki =0.0;
 	PID_roll -> setpoint =0.0;
 
-	PID_pitch -> kp =4.50f;
-	PID_pitch -> kd =0.070;
+	PID_pitch -> kp =4.20f;
+	PID_pitch -> kd =0.065;
 	PID_pitch -> ki =0.0;
 	PID_pitch -> setpoint =0.0;
 
