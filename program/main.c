@@ -1,6 +1,6 @@
 //#define DEBUG
 #include "stm32f4xx_conf.h"
-#include "../common/delay.h"
+// #include "../common/delay.h"
 #include "gpio.h"
 #include "led.h"
 #include "i2c.h"
@@ -25,7 +25,6 @@
 #include "fatfs_sd.h"
 #include "ff.h"
 #include "integer.h"
-#include <string.h>
 
 #include "sdcard.h"
 
