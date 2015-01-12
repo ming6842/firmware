@@ -1,7 +1,7 @@
 #ifndef  _MAVLINK_PROTOCOL_H_
 #define  _MAVLINK_PROTOCOL_H_
 
-#include "string.h"
+#include <string.h>
 #include "mavlink_types.h"
 
 /* 

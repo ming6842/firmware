@@ -2671,8 +2671,8 @@ FRESULT f_read (
 FRESULT f_write (
 	FIL* fp,			/* Pointer to the file object */
 	const void *buff,	/* Pointer to the data to be written */
-	UINT btw,			/* Number of bytes to write */
-	UINT* bw			/* Pointer to number of bytes written */
+	DWORD btw,			/* Number of bytes to write */
+	DWORD* bw			/* Pointer to number of bytes written */
 )
 {
 	FRESULT res;
