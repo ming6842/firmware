@@ -69,6 +69,7 @@ int main(void)
 	serial_rx_queue = xQueueCreate(5, sizeof(serial_msg));
 	gps_serial_queue = xQueueCreate(5, sizeof(serial_msg));
 	vSemaphoreCreateBinary(flight_control_sem);
+	// vSemaphoreCreateBinary(SD_data_trigger);
 	vSemaphoreCreateBinary(SD_sem);
 	/* Global data initialazition */
 	init_global_data();
@@ -90,13 +91,13 @@ int main(void)
 
 	CAN1_Transmit();
 
-	GPIO_InitTypeDef GPIO_InitStruct;
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOC, &GPIO_InitStruct);
+	// GPIO_InitTypeDef GPIO_InitStruct;
+	// GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
+	// GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
+	// GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
+	// GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+	// GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	// GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 
 	/* Register the FreeRTOS task */

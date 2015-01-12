@@ -13,12 +13,14 @@ int16_t __nav_roll,__nav_pitch;
 int32_t __altitude_Zd;
 uint32_t __pAcc,__numSV;
 
+imu_data_t imu_raw_data;
+
 void flight_control_task(void)
 {
 	uint8_t buffer[100];
 	/* State estimator initialization */
 	imu_unscaled_data_t imu_unscaled_data;
-	imu_data_t imu_raw_data;
+	// imu_data_t imu_raw_data;
 	imu_data_t imu_filtered_data;
 	imu_calibrated_offset_t imu_offset;
 	attitude_t attitude;
@@ -150,6 +152,7 @@ void flight_control_task(void)
 
 			LED_ON(LED4);
 			LED_ON(TOGGLE_DEBUG);
+			xSemaphoreGive(SD_data_trigger);
 
 		}
 

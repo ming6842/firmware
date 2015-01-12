@@ -15,25 +15,26 @@ uint8_t buffer_flag = 3;
 uint8_t buffer_sync_flag = 0 ;
 uint32_t buffer1_counter,buffer2_counter=0;
 uint8_t file_name[20]="data.txt";
-// uint8_t words1[100];
-// uint8_t words2[100];
 
-// imu_unscaled_data_t imu_unscaled_data;
-// imu_data_t imu_raw_data;
-// imu_data_t imu_filtered_data;
-// imu_calibrated_offset_t imu_offset;
-// attitude_t attitude;
-// vector3d_f_t predicted_g_data;
+uint8_t words[20];
+uint8_t counter_add;
+uint32_t time_stamp=0;
 
 void SD_data_Task(void *pvParameters)
 {
-	// imu_initialize(&imu_offset,30000);
 	buffer_flag = buffer_2;
 	while(1)
 	{
 		if( xSemaphoreTake(flight_control_sem, 9) == pdTRUE){
-			// attitude_update(&attitude,&imu_filtered_data, &predicted_g_data,&imu_unscaled_data,&imu_raw_data,&imu_offset);
+			time_stamp++;
 			if (buffer_flag == buffer_2){
+				// memset(words,' ',sizeof(words));
+				// sprintf(words,"%ld,%ld,%ld,%ld\r\n",(int32_t)(imu_raw_data.acc[0]*100.0f),(int32_t)(imu_raw_data.acc[1]*100.0f),(int32_t)(imu_raw_data.acc[2]*100.0f),time_stamp);
+				// printf("%s",words);
+				// printf("%d\r\n",strlen(words));
+				// printf("%d\r\n",buffer1_counter);
+				// strcat(buffer1,words);
+				// buffer1_counter += strlen(words);
 				buffer1[buffer1_counter]='1';
 				buffer1[buffer1_counter+1]='2';
 				buffer1[buffer1_counter+2]='3';
@@ -50,6 +51,10 @@ void SD_data_Task(void *pvParameters)
 				buffer1[buffer1_counter+13]='\n';
 				buffer1_counter+=14;
 			}else if(buffer_flag == buffer_1){
+				// memset(words,' ',sizeof(words));
+				// sprintf(words,"%ld,%ld,%ld,%ld\r\n",(int32_t)(imu_raw_data.acc[0]*100.0f),(int32_t)(imu_raw_data.acc[1]*100.0f),(int32_t)(imu_raw_data.acc[2]*100.0f),time_stamp);
+				// strcat(buffer2,words);
+				// buffer2_counter += strlen(words);
 				buffer2[buffer2_counter]='a';
 				buffer2[buffer2_counter+1]='b';
 				buffer2[buffer2_counter+2]='c';
@@ -66,20 +71,20 @@ void SD_data_Task(void *pvParameters)
 				buffer2[buffer2_counter+13]='\n';
 				buffer2_counter+=14;
 			}	
-			// printf("%f\r\n",imu_raw_data.acc[0]);
+
 			if(buffer1_counter>=19950){	
 				buffer_flag = buffer_1;
 				if(buffer_sync_flag==0){
 					xSemaphoreGive(SD_sem);
 					LED_TOGGLE(LED1);
-					GPIO_ToggleBits(GPIOC,GPIO_Pin_7);
+					// GPIO_ToggleBits(GPIOC,GPIO_Pin_7);
 				}else vTaskDelay(400);		
 			}else if(buffer2_counter>=19950){
 				buffer_flag = buffer_2;
 				if(buffer_sync_flag==0){
 					xSemaphoreGive(SD_sem);
 					LED_TOGGLE(LED1);
-					GPIO_ToggleBits(GPIOC,GPIO_Pin_7);
+					// GPIO_ToggleBits(GPIOC,GPIO_Pin_7);
 				}else vTaskDelay(400);
 			}
 		} 
@@ -91,8 +96,6 @@ void SD_write_Task(void *pvParameters)
 {
 	memset(buffer1,' ',sizeof(buffer1));
 	memset(buffer2,' ',sizeof(buffer2));
-	// uint8_t words[20];
-	// memset(words,' ',sizeof(words));
 	uint8_t i=0;
 	uint32_t length=0;
 
@@ -100,8 +103,7 @@ void SD_write_Task(void *pvParameters)
   	do{
     	res = f_mount(&fs,"0:",1);
   	}while(res && --retry);
-  	// sprintf((char*)&words,"%d\r\n",res);
-  	// uart8_puts(words);
+  	printf("%d\r\n",res);
 
   	for(i=1;i<27;i++){
   		retry = 0xFF;
@@ -111,15 +113,14 @@ void SD_write_Task(void *pvParameters)
   		if(res) file_name[3] = 97 + i;
   		else break;
   	}
+  	printf("%d\r\n",res);
   
-  	// sprintf((char*)&words,"%d\r\n",res);
-  	// uart8_puts(words);
+  	
   	retry = 0xFF;
   	do{
     	res = f_open(&fsrc,&file_name, FA_WRITE );
   	}while(res && --retry);
-  	// sprintf((char*)&words,"%d\r\n",res);
-  	// uart8_puts(words);
+  	printf("%d\r\n",res);
 
 	xTaskCreate(
 		(pdTASK_CODE)SD_data_Task,
@@ -133,9 +134,10 @@ void SD_write_Task(void *pvParameters)
 	while(1){
 		if(xSemaphoreTake(SD_sem,0)){
 			if(buffer_flag == buffer_1){
-				GPIO_ToggleBits(GPIOC,GPIO_Pin_9);
+				// GPIO_ToggleBits(GPIOC,GPIO_Pin_9);
 				LED_TOGGLE(LED4);
-				length = buffer1_counter;	
+				length = buffer1_counter;
+				printf("%d\r\n",length);	
 				buffer1_counter=0;
 				buffer_sync_flag = 1;	
 				f_lseek(&fsrc,fsrc.fsize);
@@ -152,7 +154,7 @@ void SD_write_Task(void *pvParameters)
       		memset(buffer1,' ',sizeof(buffer1));	
 			}else if(buffer_flag == buffer_2){		
 				LED_TOGGLE(LED3);
-				GPIO_ToggleBits(GPIOC,GPIO_Pin_8);
+				// GPIO_ToggleBits(GPIOC,GPIO_Pin_8);
 				length = buffer2_counter;
 				buffer2_counter=0;
 				buffer_sync_flag = 1;

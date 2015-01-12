@@ -25,6 +25,7 @@ UBXsol_t get_UBXsol_data(void);
 UBXposLLH_t get_UBXposLLH_data(void);
 vertical_data_t get_vertical_data(void);
 xSemaphoreHandle flight_control_sem;
+xSemaphoreHandle SD_data_trigger;
 extern imu_data_t imu_raw_data;
 
 #endif
