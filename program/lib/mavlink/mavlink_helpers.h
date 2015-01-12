@@ -1,7 +1,7 @@
 #ifndef  _MAVLINK_HELPERS_H_
 #define  _MAVLINK_HELPERS_H_
 
-#include "string.h"
+#include <string.h>
 #include "checksum.h"
 #include "mavlink_types.h"
 #include "mavlink_conversions.h"

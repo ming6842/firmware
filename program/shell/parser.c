@@ -1,4 +1,4 @@
-#include "string.h"
+#include <string.h>
 #include "parser.h"
 
 static void cmdSpiltToken(char *cmd_str, command_data *cd)

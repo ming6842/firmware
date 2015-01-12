@@ -1,7 +1,7 @@
 #include "QuadCopterConfig.h"
 
-#include "string.h"
-#include "stdlib.h"
+#include <string.h>
+#include <stdlib.h>
 
 #define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
 #define LINENOISE_MAX_LINE 256 //4096 is too much to this environment, it will crash!

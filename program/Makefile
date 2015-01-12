@@ -23,6 +23,8 @@ MAVLINK=./mavlink
 FREERTOS=./lib/FreeRTOS
 MAVLINK_LIB=./lib/mavlink
 TEST=./test
+FATFS=./fatfs
+FATFS_DRIVER=./fatfs/drivers
 #============================================================================#
 BOARD_CONFIG=./vertigo_v2_config.h
 DEBUG_CONFIG=./debug_config.h
@@ -41,7 +43,10 @@ CFLAGS_INCLUDE=-I./ \
 	-I$(ST)/inc \
 	-I$(MAVLINK) \
 	-I$(MAVLINK_LIB) \
-	-I$(MAVLINK_LIB)/common
+	-I$(MAVLINK_LIB)/common \
+	-I$(FATFS) \
+	-I$(FATFS)/TM \
+	-I$(FATFS_DRIVER)
 CFLAGS_DEFINE= \
         -D USE_STDPERIPH_DRIVER \
         -D __FPU_PRESENT=1 \
@@ -88,7 +93,8 @@ EXTERNAL_DEVICE_SRC = $(EXTERNAL_DEVICE)/AT24C04C.o \
 			$(EXTERNAL_DEVICE)/mpu9250.o \
 			$(EXTERNAL_DEVICE)/hmc5983.o \
 			$(EXTERNAL_DEVICE)/lea6h_ubx.o \
-			$(EXTERNAL_DEVICE)/ADS1246_MPX6115A.o
+			$(EXTERNAL_DEVICE)/ADS1246_MPX6115A.o \
+			$(EXTERNAL_DEVICE)/sdcard.o
 
 MCU_PERIPH_SRC =  \
 	$(MCU_PERIPH)/i2c.o \
@@ -133,6 +139,14 @@ MAVLINK_SRC=$(MAVLINK)/communication.o \
 	$(MAVLINK)/command_parser.o \
 	$(MAVLINK)/global.o 
 
+FATFS_SRC=$(FATFS)/ff.o \
+	$(FATFS)/diskio.o \
+	$(FATFS_DRIVER)/fatfs_sd.o \
+	$(FATFS)/TM/tm_stm32f4_spi.o \
+	$(FATFS)/TM/tm_stm32f4_delay.o \
+	$(FATFS)/TM/tm_stm32f4_fatfs.o
+
+
 OBJS=	./system_stm32f4xx.o \
 	$(CMSIS)/FastMathFunctions/arm_cos_f32.o \
 	$(CMSIS)/FastMathFunctions/arm_sin_f32.o \
@@ -153,7 +167,7 @@ OBJS=	./system_stm32f4xx.o \
         $(EXTERNAL_DEVICE_SRC) $(MCU_PERIPH_SRC) \
 	$(ESTIMATOR_SRC) $(ACTUATORS_SRC) $(RADIO_CONTROLLER_SRC) \
 	$(COMMON_SRC) $(CONTROLLER_SRC) $(FREERTOS_SRC) \
-	$(MAVLINK_SRC)
+	$(MAVLINK_SRC) $(FATFS_SRC)
 	
 
 
@@ -192,8 +206,10 @@ flash:
 	st-flash write $(BIN_IMAGE) 0x8000000
 
 #Make openocd
-openocd: flash
-	openocd -f ../debug/openocd.cfg
+openocd: 
+	openocd -f interface/stlink-v2.cfg  \
+	-c "transport select hla_swd" \
+	-f target/stm32f4x_stlink.cfg 
 
 #Make cgdb
 cgdb:
