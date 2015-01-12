@@ -5,11 +5,13 @@ void PID_attitude_roll(attitude_stablizer_pid_t* PID_control,imu_data_t* imu_fil
 
 	(PID_control -> error) = (PID_control -> setpoint) - (attitude -> roll);
 
-	float P = (PID_control -> error) * (PID_control -> kp);
+	float P = (PID_control -> error) * (PID_control -> kp); // Now P is desired roll rate 
 
-	float D = -(imu_filtered_data -> gyro[0]) * (PID_control -> kd);
+	P = bound_float(P,-120.0f,120.0f);
 
-	(PID_control -> output) = P+D;
+	float D = (P-(imu_filtered_data -> gyro[0])) * (PID_control -> kd) + (-(imu_filtered_data -> gyro[0])) * (0.035f);
+
+	(PID_control -> output) = D;
  
 }
 
@@ -20,9 +22,11 @@ void PID_attitude_pitch(attitude_stablizer_pid_t* PID_control,imu_data_t* imu_fi
 
 	float P = (PID_control -> error) * (PID_control -> kp);
 
-	float D = -(imu_filtered_data -> gyro[1]) * (PID_control -> kd);
+	P = bound_float(P,-120.0f,120.0f);
 
-	(PID_control -> output) = P+D;
+	float D = (P-(imu_filtered_data -> gyro[1])) * (PID_control -> kd) + (-(imu_filtered_data -> gyro[1])) * (0.035f);
+
+	(PID_control -> output) = D;
  
 }
 

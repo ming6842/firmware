@@ -29,7 +29,7 @@ extern uint8_t estimator_trigger_flag;
 #define OUTPUT_YU_CHI 6
 #define OUTPUT_CONTROLLER_ATTITUDE 7
 #define OUTPUT_CONTROLLER_ALTITUDE 8
-
+#define OUTPUT_RAW_GYRO 9
 /* temporary use */
 motor_output_t motor_for_data_output;
 
@@ -46,7 +46,7 @@ int main(void)
 {
 	uint8_t buffer[200];
 	uint32_t transmit_delay_count=0;
-	uint8_t output_mode = OUTPUT_CONTROLLER_ATTITUDE;
+	uint8_t output_mode = OUTPUT_CONTROLLER_ALTITUDE;
 	/* State estimator initialization */
 	imu_unscaled_data_t imu_unscaled_data;
 	imu_data_t imu_raw_data;
@@ -290,11 +290,12 @@ int main(void)
 
 
 
-				sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,\r\n",
+				sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,\r\n",
 
-					(int32_t)(attitude.roll 		* 100.0f),
+					(int32_t)(attitude.roll 				* 100.0f),
+					(int32_t)(imu_filtered_data.gyro[0] 		* 100.0f),
 					(int32_t)(pid_roll_info.setpoint		* 100.0f),
-					(int32_t)(pid_roll_info.output		* 100.0f),
+					(int32_t)(pid_roll_info.output			* 100.0f),
 					(int32_t)(motor_for_data_output.m1  	* 10.0f),
 					(int32_t)(motor_for_data_output.m2  	* 10.0f),
 					(int32_t)(motor_for_data_output.m3  	* 10.0f),
@@ -308,7 +309,7 @@ int main(void)
 		}else if(output_mode == OUTPUT_CONTROLLER_ALTITUDE){
 
 			transmit_delay_count++;
-			if ((DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) && (transmit_delay_count >= 40)){
+			if ((DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) && (transmit_delay_count >= 80)){
 
 				uint8_t iii=0;
 
@@ -341,6 +342,34 @@ int main(void)
 				LED_TOGGLE(LED1);
 			}	
 
+		}else if(output_mode == OUTPUT_RAW_GYRO){
+
+			transmit_delay_count++;
+			if ((DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) && (transmit_delay_count >= 15)){
+
+				uint8_t iii=0;
+
+				for(iii=0;iii<190;iii++){
+
+					buffer[iii]=0;
+
+				};
+				buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
+
+
+
+
+				sprintf((char *)buffer, "%ld,%ld,%ld,\r\n",
+
+					(int32_t)(attitude.roll 				* 100.0f),
+					(int32_t)(imu_raw_data.gyro[0]			* 100.0f),
+					(int32_t)(imu_filtered_data.gyro[0] 	* 100.0f));
+
+				usart2_dma_send(buffer);
+				transmit_delay_count = 0;
+				LED_TOGGLE(LED1);
+			}	
+
 		}
 
 
@@ -364,6 +393,14 @@ int main(void)
 		/* bind heading to rate */
 		pid_yaw_rate_info.setpoint = pid_heading_info.output;
 		PID_attitude_yaw_rate  (&pid_yaw_rate_info,&imu_filtered_data);
+
+		if(my_rc.mode == MODE_3){
+
+			Z_offset_for_test = 150.0f;
+		}else{
+
+			Z_offset_for_test = 0.0f;
+		}
 
 		PID_vertical_Z(&pid_Z_info,&vertical_filtered_data);
 		/* bind Zd controller to Z */

@@ -28,7 +28,7 @@ void PID_rc_pass_command(attitude_t* attitude,attitude_stablizer_pid_t* PID_roll
 
 		PID_Z -> controller_status = CONTROLLER_ENABLE ;
 		PID_Zd -> controller_status = CONTROLLER_ENABLE ;
-		PID_nav -> controller_status = CONTROLLER_ENABLE;
+		PID_nav -> controller_status = CONTROLLER_DISABLE;
 
 	}else if((rc_command -> mode) == MODE_2){
 
@@ -50,24 +50,35 @@ void PID_rc_pass_command(attitude_t* attitude,attitude_stablizer_pid_t* PID_roll
 void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_yaw_rate,attitude_stablizer_pid_t* PID_heading,vertical_pid_t* PID_Z,vertical_pid_t* PID_Zd,nav_pid_t* PID_nav){
 
 
-	PID_roll -> kp =0.20f;
-	PID_roll -> kd =0.07f;
+	// PID_roll -> kp =0.20f;
+	// PID_roll -> kd =0.105f;
+	// PID_roll -> ki =0.0;
+	// PID_roll -> setpoint =0.0;
+
+	// PID_pitch -> kp =0.20f;
+	// PID_pitch -> kd =0.105f;
+	// PID_pitch -> ki =0.0;
+	// PID_pitch -> setpoint =0.0;
+
+	/* for the new cascaded controller */
+	PID_roll -> kp =4.50f;
+	PID_roll -> kd =0.070f;
 	PID_roll -> ki =0.0;
 	PID_roll -> setpoint =0.0;
 
-	PID_pitch -> kp =0.20f;
-	PID_pitch -> kd =0.07f;
+	PID_pitch -> kp =4.50f;
+	PID_pitch -> kd =0.070;
 	PID_pitch -> ki =0.0;
 	PID_pitch -> setpoint =0.0;
 
-	PID_yaw_rate -> kp =0.8f;
+	PID_yaw_rate -> kp =0.8f;//0.8f;
 	PID_yaw_rate -> kd =0.0f;
 	PID_yaw_rate -> ki =0.0;
 	PID_yaw_rate -> setpoint =0.0;
 	PID_yaw_rate -> out_max = 30.0f;
 	PID_yaw_rate -> out_min = -30.0f;
 
-	PID_heading -> kp = 3.0f;
+	PID_heading -> kp = 3.0f;//3.0f;
 	PID_heading -> kd = 0.0f;
 	PID_heading -> ki = 0.0;
 	PID_heading -> out_max = 50.0f;

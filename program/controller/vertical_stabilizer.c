@@ -3,6 +3,8 @@
 
 #define LOOP_DT  (0.00025f)
 
+float Z_offset_for_test=0.0f;
+
 void PID_vertical_Zd(vertical_pid_t* PID_control,vertical_data * vertical_filtered_data){
 
 	if( PID_control -> controller_status == CONTROLLER_ENABLE){
@@ -30,7 +32,7 @@ void PID_vertical_Z(vertical_pid_t* PID_control,vertical_data * vertical_filtere
 
 	if( PID_control -> controller_status == CONTROLLER_ENABLE){
 
-		float error = (PID_control -> setpoint) - (vertical_filtered_data -> Z);
+		float error = (PID_control -> setpoint + Z_offset_for_test) - (vertical_filtered_data -> Z);
 
 		float P = error * (PID_control -> kp);
 

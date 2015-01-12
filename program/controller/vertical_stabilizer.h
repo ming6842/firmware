@@ -9,6 +9,8 @@
 #define CONTROLLER_DISABLE 0
 #define CONTROLLER_ENABLE 1
 
+extern float Z_offset_for_test;
+
 typedef struct vertical_pid_t {
 	float kp,ki,kd;
 	float integral;
