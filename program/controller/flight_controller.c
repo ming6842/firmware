@@ -14,6 +14,7 @@ int32_t __altitude_Zd;
 uint32_t __pAcc,__numSV;
 
 imu_data_t imu_raw_data;
+radio_controller_t my_rc;
 
 void flight_control_task(void)
 {
@@ -29,7 +30,7 @@ void flight_control_task(void)
 	vertical_data_t vertical_raw_data;
 
 	/* Radio controller initialization */
-	radio_controller_t my_rc;
+	// radio_controller_t my_rc;
 
 	/* PID controller initialization */
 	attitude_stablizer_pid_t pid_roll_info;
