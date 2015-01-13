@@ -1,6 +1,7 @@
 //navigation.c
 #include "navigation.h"
 #include "mission.h"
+#include "simple_navigation.h"
 // NED -> XYZ so, N~x, E~y
 // lat=N/S -> x, lon=E/W -> y
 #define WAYPOINT_DEBUG printf
