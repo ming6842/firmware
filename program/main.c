@@ -69,7 +69,7 @@ int main(void)
 	serial_rx_queue = xQueueCreate(5, sizeof(serial_msg));
 	gps_serial_queue = xQueueCreate(5, sizeof(serial_msg));
 	vSemaphoreCreateBinary(flight_control_sem);
-	// vSemaphoreCreateBinary(SD_data_trigger);
+	vSemaphoreCreateBinary(SD_data_trigger);
 	vSemaphoreCreateBinary(SD_sem);
 	/* Global data initialazition */
 	init_global_data();
@@ -91,13 +91,37 @@ int main(void)
 
 	CAN1_Transmit();
 
-	// GPIO_InitTypeDef GPIO_InitStruct;
-	// GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
-	// GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
-	// GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
-	// GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-	// GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	// GPIO_Init(GPIOC, &GPIO_InitStruct);
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	uint8_t i=0;
+	uint8_t  retry = 0xFF;
+  	do{
+    	res = f_mount(&fs,"0:",1);
+  	}while(res && --retry);
+  	printf("%d\r\n",res);
+
+  	for(i=1;i<27;i++){
+  		retry = 0xFF;
+  		do{
+    		res = f_open(&fsrc,&file_name,FA_CREATE_NEW);
+  		}while(res && --retry);
+  		if(res) file_name[3] = 97 + i;
+  		else break;
+  	}
+  	printf("%d\r\n",res);
+    	
+  	retry = 0xFF;
+  	do{
+    	res = f_open(&fsrc,&file_name, FA_WRITE );
+  	}while(res && --retry);
+  	printf("%d\r\n",res);
+
 
 
 	/* Register the FreeRTOS task */
@@ -111,14 +135,23 @@ int main(void)
 		NULL
 	);
 
-	// xTaskCreate(
-	// 	(pdTASK_CODE)flight_control_task,
-	// 	(signed portCHAR*)"flight control task",
-	// 	4096,
-	// 	NULL,
-	// 	tskIDLE_PRIORITY + 9,
-	// 	NULL
-	// );
+	xTaskCreate(
+		(pdTASK_CODE)SD_data_Task,
+		(signed portCHAR*)"SD_data_Task",
+		4096,
+		NULL,
+		tskIDLE_PRIORITY + 6,
+		NULL
+	);
+
+	xTaskCreate(
+		(pdTASK_CODE)flight_control_task,
+		(signed portCHAR*)"flight control task",
+		4096,
+		NULL,
+		tskIDLE_PRIORITY + 9,
+		NULL
+	);
 
 	// /* Navigation task */
 	// xTaskCreate(

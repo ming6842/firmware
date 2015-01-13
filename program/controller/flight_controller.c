@@ -51,11 +51,11 @@ void flight_control_task(void)
 	magnetometer_initialize(&imu_offset);
 #endif
 #if IS_USE_BAROMETER
-	barometer_initialize();
+	// barometer_initialize();
 #endif
 	imu_initialize(&imu_offset,30000);
 
-	check_rc_safety_init(&my_rc);
+	// check_rc_safety_init(&my_rc);
 #if IS_USE_GPS
 	lea6h_set_USART_IT();
 #endif 
@@ -154,7 +154,6 @@ void flight_control_task(void)
 			LED_ON(LED4);
 			LED_ON(TOGGLE_DEBUG);
 			xSemaphoreGive(SD_data_trigger);
-
 		}
 
 

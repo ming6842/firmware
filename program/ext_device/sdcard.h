@@ -32,7 +32,16 @@ void SD_write_Task(void *pvParameters);
 // extern uint8_t buffer1[10000];
 // extern uint8_t buffer2[10000];   
 
+/* File system obbuffer2_counterect structure (FATFS) */
+extern FATFS     fs;
+/* File obbuffer2_counterect structure (FIL) */
+extern FIL       fsrc;
+/* File function return code (FRESULT) */
+extern FRESULT   res;
+/* File read/write count*/
+extern UINT      bw;
 
+extern uint8_t file_name[20];
 
 
 
