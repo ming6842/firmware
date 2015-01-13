@@ -135,7 +135,7 @@ void SD_write_Task(void *pvParameters)
 		if(xSemaphoreTake(SD_sem,0)){
 			if(buffer_flag == buffer_1){
 				// GPIO_ToggleBits(GPIOC,GPIO_Pin_9);
-				LED_TOGGLE(LED4);
+				//LED_TOGGLE(LED4);
 				length = buffer1_counter;
 				printf("%d\r\n",length);	
 				buffer1_counter=0;
@@ -149,7 +149,9 @@ void SD_write_Task(void *pvParameters)
           			}
       			}	
       		while (bw < length);
+            		LED_ON(LED4);
       		f_sync(&fsrc);
+            		LED_OFF(LED4);
       		buffer_sync_flag = 0;
       		memset(buffer1,' ',sizeof(buffer1));	
 			}else if(buffer_flag == buffer_2){		

@@ -64,6 +64,28 @@ void vApplicationMallocFailedHook(void)
 CanRxMsg MainRxMessage;
 int main(void)
 {
+
+	/* File system obbuffer2_counterect structure (FATFS) */
+	FATFS     fs;
+	/* File obbuffer2_counterect structure (FIL) */
+	FIL       fsrc;
+	/* File function return code (FRESULT) */
+	FRESULT   res;
+	/* File read/write count*/
+	DWORD      bw;
+
+
+	uint8_t buffer1[20000];
+	uint8_t buffer2[20000]; 
+	uint8_t buffer_flag = 3;
+	uint8_t buffer_sync_flag = 0 ;
+	uint32_t buffer1_counter,buffer2_counter=0;
+	uint8_t file_name[20]="HAHA.txt";
+
+	uint8_t words[20];
+	uint8_t counter_add;
+	uint32_t time_stamp=0;
+
 	vSemaphoreCreateBinary(serial_tx_wait_sem);
 	serial_rx_queue = xQueueCreate(5, sizeof(serial_msg));
 	gps_serial_queue = xQueueCreate(5, sizeof(serial_msg));
@@ -90,6 +112,64 @@ int main(void)
 	CAN1_Config();
 
 	CAN1_Transmit();
+
+
+
+	memset(buffer1,' ',sizeof(buffer1));
+	memset(buffer2,' ',sizeof(buffer2));
+	uint8_t i=0;
+	uint32_t length=0;
+	uint8_t  retry = 0xFF;
+
+	uint32_t multiplied_count = 5000;
+
+	length = sprintf(buffer1, "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\n");
+
+  	do{
+    	res = f_mount(&fs,"0:",1);
+  	}while(res && --retry);
+  	printf("%d\r\n",res);
+
+
+  	for(i=1;i<27;i++){
+  		retry = 0xFF;
+  		do{
+    		res = f_open(&fsrc,&file_name,FA_CREATE_NEW);
+  		}while(res && --retry);
+  		if(res) file_name[3] = 97 + i;
+  		else break;
+  	}
+
+  	retry = 0xFF;
+  	do{
+    	res = f_open(&fsrc,&file_name, FA_WRITE );
+  	}while(res && --retry);
+
+
+	f_lseek(&fsrc,fsrc.fsize);
+
+	while(multiplied_count--){
+		do{
+         			LED_TOGGLE(TOGGLE_DEBUG);
+        		res = f_write(&fsrc,&buffer1,length,&bw);
+         			//LED_ON(TOGGLE_DEBUG);
+        		if(res){
+         		// LED_TOGGLE(LED2);
+         		break;
+        		}
+     		}	
+     	while (bw < length);
+         			// LED_OFF(TOGGLE_DEBUG);
+         			// LED_ON(TOGGLE_DEBUG);
+         			// LED_TOGGLE(TOGGLE_DEBUG);
+     }
+    f_sync(&fsrc);
+    //2.46
+    while(1){
+
+
+    	LED_TOGGLE(LED1);
+    }
 
 	// GPIO_InitTypeDef GPIO_InitStruct;
 	// GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
