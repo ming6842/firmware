@@ -27,19 +27,20 @@ void SD_data_Task(void *pvParameters)
 	while(1)
 	{
 		if( xSemaphoreTake(SD_data_trigger, 9) == pdTRUE){
+			GPIO_ToggleBits(GPIOC,GPIO_Pin_8);
 			uint8_t i;	
 			time_stamp++;
 			if (time_stamp>=10) time_stamp=0;
 			if (buffer_flag == buffer_2){
-				memset(words,' ',sizeof(words));
-				sprintf(words,"%ld,%ld,%ld,%d\r\n",(int32_t)(imu_raw_data.acc[0]*100.0f),(int32_t)(imu_raw_data.acc[1]*100.0f),(int32_t)(imu_raw_data.acc[2]*100.0f),(signed int)time_stamp);
+				memset(words,0x00,sizeof(words));
+				sprintf(words,"%ld,%ld,%ld,%d\r\n",imu_unscaled_data.acc[0],imu_unscaled_data.acc[1],imu_unscaled_data.acc[2],(signed int)time_stamp);
 				for(i=0;i<(strlen((char*)words));i++){
 					buffer1[buffer1_counter+i]=words[i];
 				}
 				buffer1_counter += (strlen((char*)words));
 			}else if(buffer_flag == buffer_1){
-				memset(words,' ',sizeof(words));
-				sprintf(words,"%ld,%ld,%ld,%d\r\n",(int32_t)(imu_raw_data.acc[0]*100.0f),(int32_t)(imu_raw_data.acc[1]*100.0f),(int32_t)(imu_raw_data.acc[2]*100.0f),(signed int)time_stamp);
+				memset(words,0x00,sizeof(words));
+				sprintf(words,"%ld,%ld,%ld,%d\r\n",imu_unscaled_data.acc[0],imu_unscaled_data.acc[1],imu_unscaled_data.acc[2],(signed int)time_stamp);
 				for(i=0;i<(strlen((char*)words));i++){
 					buffer2[buffer2_counter+i]=words[i];
 				}
@@ -66,8 +67,8 @@ void SD_data_Task(void *pvParameters)
 
 void SD_write_Task(void *pvParameters)
 {
-	memset(buffer1,' ',sizeof(buffer1));
-	memset(buffer2,' ',sizeof(buffer2));
+	memset(buffer1,0x00,sizeof(buffer1));
+	memset(buffer2,0x00,sizeof(buffer2));
 
 	while(1){
 		if(xSemaphoreTake(SD_sem,0)){
@@ -76,33 +77,33 @@ void SD_write_Task(void *pvParameters)
 				buffer1_counter=0;
 				buffer_sync_flag = 1;	
 				f_lseek(&fsrc,fsrc.fsize);
-				// do{
+				do{
           			res = f_write(&fsrc,&buffer1,strlen((char*)buffer1),&bw);
           			if(res){
             		LED_TOGGLE(LED2);
-            		// break;
+            		break;
           			}
-      		// 	}	
-      		// while (bw < strlen((char*)buffer1));
+      			}	
+      		while (bw < strlen((char*)buffer1));
       		f_sync(&fsrc);
       		buffer_sync_flag = 0;
-      		memset(buffer1,' ',sizeof(buffer1));	
+      		memset(buffer1,0x00,sizeof(buffer1));	
 			}else if(buffer_flag == buffer_2){		
 				LED_TOGGLE(LED3);
 				buffer2_counter=0;
 				buffer_sync_flag = 1;
 				f_lseek(&fsrc,fsrc.fsize); 
-				// do{
+				do{
           			res = f_write(&fsrc,&buffer2,strlen((char*)buffer2),&bw);
           			if(res){
             		LED_TOGGLE(LED2);
-            		// break;
+            		break;
           			}
-      		// 	}
-      		// while (bw < strlen((char*)buffer2));
+      			}
+      		while (bw < strlen((char*)buffer2));
       		f_sync(&fsrc);
       		buffer_sync_flag = 0;	
-      		memset(buffer2,' ',sizeof(buffer2));    		
+      		memset(buffer2,0x00,sizeof(buffer2));    		
 			}
     	}	
 	}

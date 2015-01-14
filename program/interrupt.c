@@ -16,13 +16,16 @@ void TIM1_BRK_TIM9_IRQHandler()
 void TIM8_BRK_TIM12_IRQHandler()
 {
 	long lHigherPriorityTaskWoken = pdFALSE;
+	long lHigherPriorityTaskWoken2 = pdFALSE;
         if ( TIM_GetITStatus(TIM12, TIM_IT_Update) != RESET ) {
 
         	xSemaphoreGiveFromISR(flight_control_sem, &lHigherPriorityTaskWoken);
+        	xSemaphoreGiveFromISR(SD_data_trigger, &lHigherPriorityTaskWoken2);
 		TIM_ClearITPendingBit(TIM12, TIM_IT_Update);
 
         }
         portYIELD_FROM_ISR(  lHigherPriorityTaskWoken );
+        portYIELD_FROM_ISR(  lHigherPriorityTaskWoken2 );
 }
 void TIM1_UP_TIM10_IRQHandler()
 {
