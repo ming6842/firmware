@@ -20,17 +20,17 @@ uint8_t file_name[20]="data.txt";
 uint8_t words[40];
 uint8_t counter_add;
 uint8_t time_stamp=0;
+uint8_t time_flag=0;
 
 void SD_data_Task(void *pvParameters)
 {
 	buffer_flag = buffer_2;
 	while(1)
 	{
-		if( xSemaphoreTake(SD_data_trigger, 9) == pdTRUE){
+		if( xSemaphoreTake(SD_data_trigger, 9) == pdTRUE && time_flag==4){
+			time_flag=0;
 			GPIO_ToggleBits(GPIOC,GPIO_Pin_8);
 			uint8_t i;	
-			time_stamp++;
-			if (time_stamp>=10) time_stamp=0;
 			if (buffer_flag == buffer_2){
 				memset(words,0x00,sizeof(words));
 				sprintf(words,"%ld,%ld,%ld,%d\r\n",imu_unscaled_data.acc[0],imu_unscaled_data.acc[1],imu_unscaled_data.acc[2],(signed int)time_stamp);
@@ -47,18 +47,20 @@ void SD_data_Task(void *pvParameters)
 				buffer2_counter += (strlen((char*)words));
 			}	
 
+			GPIO_ToggleBits(GPIOC,GPIO_Pin_8);
+
 			if(buffer1_counter>=19968){	
 				buffer_flag = buffer_1;
 				if(buffer_sync_flag==0){
 					xSemaphoreGive(SD_sem);
 					LED_TOGGLE(LED1);
-				}else vTaskDelay(400);		
+				}else vTaskDelay(40);		
 			}else if(buffer2_counter>=19968){
 				buffer_flag = buffer_2;
 				if(buffer_sync_flag==0){
 					xSemaphoreGive(SD_sem);
 					LED_TOGGLE(LED1);
-				}else vTaskDelay(400);
+				}else vTaskDelay(40);
 			}
 		} 
 	}    		
