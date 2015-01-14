@@ -320,7 +320,6 @@ void mission_write_waypoint_list(void)
 	waypoint_info.waypoint_count = new_waypoint_list_count;
 	waypoint_info.is_busy = false;
 	simple_waypoint_have_been_updated = false;
-	nav_waypoint_list_is_updated = false;
 	/* Send a mission ack Message at the end */
 	mavlink_msg_mission_ack_pack(1, 0, &msg, 255, 0, 0);
 	send_package(&msg);
@@ -359,8 +358,6 @@ void mission_set_new_current_waypoint(void)
 	/* Set the new waypoint flag */
 	wp = get_waypoint(waypoint_info.waypoint_list, waypoint_info.current_waypoint.number);
 	wp->data.current = 1;
-	/*let simple navigation to get data*/
-	got_set_current_command = true;
 	/* Send back the current waypoint seq as ack message */
 	mavlink_msg_mission_current_pack(1, 0, &msg, waypoint_info.current_waypoint.number);
 	send_package(&msg);
