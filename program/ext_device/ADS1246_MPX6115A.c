@@ -91,3 +91,33 @@ void MPX6115_update_tare_value(void){
 
 
 }
+
+
+// void ads1246_CAN_UpdateADC(imu_unscaled_data_t *imu_raw_data){
+
+// 	CanRxMsg RxMessage;
+//  	uint8_t barometer_raw_data[3];
+
+//  		if( CAN2_CheckMessageStatusFlag(CAN_MESSAGE_BAROMETER) == 1){
+
+//     			RxMessage =  CAN2_PassRXMessage();
+// 				CAN2_ClearMessageStatusFlag(CAN_MESSAGE_MAGNETOMETER);
+
+// 				hmc5983_buffer[0] = RxMessage.Data[0];
+// 				hmc5983_buffer[1] = RxMessage.Data[1];
+// 				hmc5983_buffer[2] = RxMessage.Data[2];
+// 				hmc5983_buffer[3] = RxMessage.Data[3];
+// 				hmc5983_buffer[4] = RxMessage.Data[4];
+// 				hmc5983_buffer[5] = RxMessage.Data[5];
+
+
+// 				imu_raw_data->mag[0] = -(int16_t)(((uint16_t)hmc5983_buffer[0] << 8) | (uint16_t)hmc5983_buffer[1]);
+// 				imu_raw_data->mag[2] = -(int16_t)(((uint16_t)hmc5983_buffer[2] << 8) | (uint16_t)hmc5983_buffer[3]);
+// 				imu_raw_data->mag[1] =  (int16_t)(((uint16_t)hmc5983_buffer[4] << 8) | (uint16_t)hmc5983_buffer[5]);
+
+
+//  		}
+
+
+
+// }

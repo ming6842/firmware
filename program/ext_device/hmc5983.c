@@ -146,7 +146,7 @@ void hmc5983_CAN_UpdateIMU(imu_unscaled_data_t *imu_raw_data){
 
  		if( CAN2_CheckMessageStatusFlag(CAN_MESSAGE_MAGNETOMETER) == 1){
 
-    			RxMessage =  CAN2_PassRXMessage();
+    			RxMessage =  CAN2_PassRXMessage(CAN_MESSAGE_MAGNETOMETER);
 				CAN2_ClearMessageStatusFlag(CAN_MESSAGE_MAGNETOMETER);
 
 				hmc5983_buffer[0] = RxMessage.Data[0];

@@ -24,8 +24,9 @@ typedef struct can_message_receivedFlag_t {
 
 
 typedef enum {
-	CAN_MESSAGE_MAGNETOMETER,
+	CAN_MESSAGE_MAGNETOMETER = 0,
 	CAN_MESSAGE_BAROMETER,
+	CAN_MESSAGE_SIZE,
 } CanMessageType;
 
 
@@ -43,7 +44,7 @@ void CAN2_NVIC_Config(void);
 void CAN2_RX0_IRQHandler(void);
 
 
-CanRxMsg CAN2_PassRXMessage(void);
+CanRxMsg CAN2_PassRXMessage(uint8_t messageID);
 uint8_t CAN2_CheckMessageStatusFlag(uint8_t messageID);
 void CAN2_ClearMessageStatusFlag(uint8_t messageID);
 

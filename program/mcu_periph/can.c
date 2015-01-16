@@ -193,8 +193,14 @@ void CAN2_NVIC_Config(void)
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 }
+
+
+/* Message buffer area */
 CanRxMsg CAN2RxMessage;
 can_message_receivedFlag_t canMessageFlag;
+CanRxMsg CANMsgDecoded[CAN_MESSAGE_SIZE];
+
+
 void CAN2_RX0_IRQHandler(void)
 {
   CAN_Receive(CAN2, CAN_FIFO0, &CAN2RxMessage);
@@ -203,6 +209,7 @@ void CAN2_RX0_IRQHandler(void)
   if (((CAN2RxMessage.ExtId & 0xFFFF0000) == 0x00030000)&&(CAN2RxMessage.IDE == CAN_ID_EXT ))
   {
       canMessageFlag.MagnetometerUpdated = 1;
+      CANMsgDecoded[CAN_MESSAGE_MAGNETOMETER] = CAN2RxMessage;
   }
 }
 
@@ -229,10 +236,10 @@ void CAN2_Transmit(void){
 
 }
 
-CanRxMsg CAN2_PassRXMessage(void){
+CanRxMsg CAN2_PassRXMessage(uint8_t messageID){
 
 
-  return CAN2RxMessage;
+  return CANMsgDecoded[messageID];
 }
 
 
