@@ -210,6 +210,10 @@ void CAN2_RX0_IRQHandler(void)
   {
       canMessageFlag.MagnetometerUpdated = 1;
       CANMsgDecoded[CAN_MESSAGE_MAGNETOMETER] = CAN2RxMessage;
+  }else if (((CAN2RxMessage.ExtId & 0xFFFF0000) == 0x00020000)&&(CAN2RxMessage.IDE == CAN_ID_EXT ))
+  {
+      canMessageFlag.BarometerUpdated = 1;
+      CANMsgDecoded[CAN_MESSAGE_BAROMETER] = CAN2RxMessage;
   }
 }
 
@@ -232,6 +236,21 @@ void CAN2_Transmit(void){
   TxMessage.Data[5] = 64;
   TxMessage.Data[6] = 64;
   TxMessage.Data[7] = 64;
+  CAN_Transmit(CAN2, &TxMessage);
+
+}
+void CAN2_BroadcastMode(uint8_t mode, uint8_t safetystatus){
+
+  CanTxMsg TxMessage;
+
+  /* Transmit Structure preparation */
+  TxMessage.StdId = 0x321;
+  TxMessage.ExtId = 0x1EEE0101;
+  TxMessage.RTR = CAN_RTR_DATA;
+  TxMessage.IDE = CAN_ID_EXT;
+  TxMessage.DLC = 2;
+  TxMessage.Data[0] = mode;
+  TxMessage.Data[1] = safetystatus;
   CAN_Transmit(CAN2, &TxMessage);
 
 }

@@ -43,6 +43,7 @@ void CAN2_Transmit(void);
 void CAN2_NVIC_Config(void);
 void CAN2_RX0_IRQHandler(void);
 
+void CAN2_BroadcastMode(uint8_t mode, uint8_t safetystatus);
 
 CanRxMsg CAN2_PassRXMessage(uint8_t messageID);
 uint8_t CAN2_CheckMessageStatusFlag(uint8_t messageID);

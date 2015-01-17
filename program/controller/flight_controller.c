@@ -15,7 +15,11 @@ uint32_t __pAcc,__numSV;
 
 void flight_control_task(void)
 {
+	#define MODE_BROADCAST_PRSC 2000
 	uint8_t buffer[100];
+	uint32_t modeBroadcastPrescaler = MODE_BROADCAST_PRSC;
+
+
 	/* State estimator initialization */
 	imu_unscaled_data_t imu_unscaled_data;
 	imu_data_t imu_raw_data;
@@ -64,6 +68,15 @@ void flight_control_task(void)
 			LED_OFF(LED4);
 			LED_OFF(TOGGLE_DEBUG);
 
+			/* Broadcast mode and safety switch on CAN Bus */
+			modeBroadcastPrescaler--;
+			if(modeBroadcastPrescaler == 0){
+
+			CAN2_BroadcastMode(my_rc.mode,my_rc.safety);
+ 			modeBroadcastPrescaler = MODE_BROADCAST_PRSC;
+
+			}
+
 			//if(GPS_solution_info.updatedFlag){
 				if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
 
@@ -78,30 +91,26 @@ void flight_control_task(void)
 			 	// 		(uint32_t)GPS_solution_info.numSV);
 				
 
-				// 	sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
-				// 		(int32_t)(attitude.yaw* 1.0f),
-				// 		(int32_t)(vertical_filtered_data.Zd* 1.0f),
-				// 		(int32_t)(vertical_filtered_data.Z* 1.0f),
-				// 		(int32_t)(pid_Zd_info.integral* 10.0f),
-				// 		(int32_t)(pid_nav_info.output_roll* 1.0f),
-				// 		(int32_t)(pid_nav_info.output_pitch* 1.0f),
-				// 		(int32_t)GPS_velocity_NED.velE,
-
-			 // 			(uint32_t)GPS_solution_info.pAcc,
-			 // 			(uint32_t)GPS_solution_info.numSV);
-
-				// 	usart2_dma_send(buffer);
-				// }	
-
-					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+					sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
 						(int32_t)(attitude.yaw* 1.0f),
-						(int32_t)(imu_unscaled_data.mag[0]* 1.0f),
-						(int32_t)(imu_unscaled_data.mag[1]* 1.0f),
-						(int32_t)(imu_unscaled_data.mag[2]* 1.0f),
-
+						(int32_t)(vertical_filtered_data.Zd* 1.0f),
+						(int32_t)(vertical_filtered_data.Z* 1.0f),
+						(int32_t)(pid_Zd_info.integral* 10.0f),
+						(int32_t)(pid_nav_info.output_roll* 1.0f),
+						(int32_t)(pid_nav_info.output_pitch* 1.0f),
+						(int32_t)GPS_velocity_NED.velE,
+			 			(uint32_t)GPS_solution_info.pAcc,
 			 			(uint32_t)GPS_solution_info.numSV);
 
-					usart2_dma_send(buffer);
+				// 	sprintf((char *)buffer, "%ld,%ld,%ld,%ld,%ld\r\n",
+				// 		(int32_t)(attitude.yaw* 1.0f),
+				// 		(int32_t)(imu_unscaled_data.mag[0]* 1.0f),
+				// 		(int32_t)(imu_unscaled_data.mag[1]* 1.0f),
+				// 		(int32_t)(imu_unscaled_data.mag[2]* 1.0f),
+
+			 // 			(uint32_t)GPS_solution_info.numSV);
+
+					 // usart2_dma_send(buffer);
 				}	
 			 	GPS_solution_info.updatedFlag=0;
 			//}

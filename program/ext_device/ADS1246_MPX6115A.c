@@ -92,32 +92,71 @@ void MPX6115_update_tare_value(void){
 
 }
 
+uint8_t barometer_raw_data[3];
 
-// void ads1246_CAN_UpdateADC(imu_unscaled_data_t *imu_raw_data){
+int32_t ads1246_CAN_UpdateADC(void){
 
-// 	CanRxMsg RxMessage;
-//  	uint8_t barometer_raw_data[3];
+	CanRxMsg BarRxMessage;
 
-//  		if( CAN2_CheckMessageStatusFlag(CAN_MESSAGE_BAROMETER) == 1){
+ 		if( CAN2_CheckMessageStatusFlag(CAN_MESSAGE_BAROMETER) == 1){
 
-//     			RxMessage =  CAN2_PassRXMessage();
-// 				CAN2_ClearMessageStatusFlag(CAN_MESSAGE_MAGNETOMETER);
+    			BarRxMessage =  CAN2_PassRXMessage(CAN_MESSAGE_BAROMETER);
+				CAN2_ClearMessageStatusFlag(CAN_MESSAGE_BAROMETER);
 
-// 				hmc5983_buffer[0] = RxMessage.Data[0];
-// 				hmc5983_buffer[1] = RxMessage.Data[1];
-// 				hmc5983_buffer[2] = RxMessage.Data[2];
-// 				hmc5983_buffer[3] = RxMessage.Data[3];
-// 				hmc5983_buffer[4] = RxMessage.Data[4];
-// 				hmc5983_buffer[5] = RxMessage.Data[5];
+				barometer_raw_data[0] = BarRxMessage.Data[0];
+				barometer_raw_data[1] = BarRxMessage.Data[1];
+				barometer_raw_data[2] = BarRxMessage.Data[2];
+ 		}
 
 
-// 				imu_raw_data->mag[0] = -(int16_t)(((uint16_t)hmc5983_buffer[0] << 8) | (uint16_t)hmc5983_buffer[1]);
-// 				imu_raw_data->mag[2] = -(int16_t)(((uint16_t)hmc5983_buffer[2] << 8) | (uint16_t)hmc5983_buffer[3]);
-// 				imu_raw_data->mag[1] =  (int16_t)(((uint16_t)hmc5983_buffer[4] << 8) | (uint16_t)hmc5983_buffer[5]);
+	return  (uint32_t)barometer_raw_data[0]<<16 | (uint32_t)barometer_raw_data[1]<<8 |  (uint32_t)barometer_raw_data[2];
+
+}
+
+void MPX6115_CAN_update_tare_value(void){
+#define BAROMETER_TARE_COUNT 500
 
 
-//  		}
+	uint16_t count = BAROMETER_TARE_COUNT;
+	float tare_cache = 0.0f;
+	uint16_t led_presc = 500;
+
+			LED_ON(LED2);
+			LED_OFF(LED1);
+
+	while(count){
+
+		while(CAN2_CheckMessageStatusFlag(CAN_MESSAGE_BAROMETER) == 0){
+
+			ads1246_delay(12345/4);
+
+			led_presc--;
+			if(led_presc == 0){
+
+			LED_TOGGLE(LED2);
+			LED_TOGGLE(LED1);
+			led_presc = 300;
+			}
+
+		}
+		if( CAN2_CheckMessageStatusFlag(CAN_MESSAGE_BAROMETER) == 1){
+
+			 tare_cache += ((float)ads1246_CAN_UpdateADC()/(float)BAROMETER_TARE_COUNT);
+			 count--;
+		}
+	}
+
+	mpx6115A_tare_value = (int32_t)(tare_cache);
+
+			LED_OFF(LED1);
+			LED_OFF(LED2);
+}
+
+void MPX6115_CAN_Initialize(void){
 
 
+	ads1246_delay(10000);
+	MPX6115_CAN_update_tare_value();
 
-// }
+
+}
