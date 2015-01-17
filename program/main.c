@@ -30,6 +30,7 @@ extern uint8_t estimator_trigger_flag;
 #define OUTPUT_CONTROLLER_ATTITUDE 7
 #define OUTPUT_CONTROLLER_ALTITUDE 8
 #define OUTPUT_RAW_GYRO 9
+#define OUTPUT_RAW_ACC 10
 /* temporary use */
 motor_output_t motor_for_data_output;
 
@@ -46,7 +47,13 @@ int main(void)
 {
 	uint8_t buffer[200];
 	uint32_t transmit_delay_count=0;
-	uint8_t output_mode = OUTPUT_CONTROLLER_ALTITUDE;
+	uint8_t output_mode = OUTPUT_RAW_ACC;
+
+	/* Acc offset */
+	float offset_read_alpha=0.001f;
+	/*   */
+
+
 	/* State estimator initialization */
 	imu_unscaled_data_t imu_unscaled_data;
 	imu_data_t imu_raw_data;
@@ -370,6 +377,34 @@ int main(void)
 				LED_TOGGLE(LED1);
 			}	
 
+		}else if(output_mode == OUTPUT_RAW_ACC){
+
+			transmit_delay_count++;
+			if ((DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) && (transmit_delay_count >= 15)){
+
+				uint8_t iii=0;
+
+				for(iii=0;iii<190;iii++){
+
+					buffer[iii]=0;
+
+				};
+				buffer[7] = 0;buffer[8] = 0;buffer[9] = 0;buffer[10] = 0;buffer[11] = 0;buffer[12] = 0;	buffer[13] = 0;
+
+
+
+
+				sprintf((char *)buffer, "%ld,%ld,%ld,\r\n",
+
+					(int32_t)(imu_super_lowpass_data.acc[0]			* 1.0f),
+					(int32_t)(imu_super_lowpass_data.acc[1]			* 1.0f),
+					(int32_t)(imu_super_lowpass_data.acc[2]			* 1.0f));
+
+				usart2_dma_send(buffer);
+				transmit_delay_count = 0;
+				LED_TOGGLE(LED1);
+			}	
+
 		}
 
 
@@ -379,6 +414,10 @@ int main(void)
 				imu_super_lowpass_data.gyro[2] = lowpass_float(&imu_super_lowpass_data.gyro[2],&imu_raw_data.gyro[2],0.005f);
 
 
+				imu_super_lowpass_data.acc[0] = (float)(imu_unscaled_data.acc[0])*offset_read_alpha + imu_super_lowpass_data.acc[0]*(1.0f - offset_read_alpha);
+				imu_super_lowpass_data.acc[1] = (float)(imu_unscaled_data.acc[1])*offset_read_alpha + imu_super_lowpass_data.acc[1]*(1.0f - offset_read_alpha);
+				imu_super_lowpass_data.acc[2] = (float)(imu_unscaled_data.acc[2])*offset_read_alpha + imu_super_lowpass_data.acc[2]*(1.0f - offset_read_alpha);
+	
 		attitude_update(&attitude,&imu_filtered_data, &predicted_g_data,&imu_unscaled_data,&imu_raw_data,&imu_offset);
 		inverse_rotation_trigonometry_precal(&attitude,&negative_euler);
 		vertical_sense(&vertical_filtered_data,&vertical_raw_data, &imu_raw_data,&negative_euler);

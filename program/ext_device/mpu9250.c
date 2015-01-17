@@ -96,21 +96,21 @@ void mpu9250_apply_accel_calibration(imu_calibrated_offset_t *imu_offset){
 
 	Raw_Axis |  min   | max  |  average(offset) | 1g_scale	|>
 
-	    0	   -4096	4088	-4					4092 //4094 (fine calibrated)
-	    1	   -4080	4102    11 					4091 //4095 (fine calibrated)
-	    2	   -4364  	3870	-247				4117 //4xxx (fine calibrated)
+	    0	   -4074	4110	18					4092 
+	    1	   -4074	4111    11 					4092 
+	    2	   -4306  	3923	-247				4117 
 	
 	But actual raw_data for 1g in 8g_full_scale setting should be 4096
 	So that the modify factor for acc_scale will be 4096/(measured1g_scale) (i.e. scale it to 4096)
 	*/
 
-	imu_offset->acc[0]=-4;
-	imu_offset->acc[1]=11;
-	imu_offset->acc[2]=-217;
+	imu_offset->acc[0]=18;
+	imu_offset->acc[1]=19;
+	imu_offset->acc[2]=-191;
 
-	imu_offset->acc_scale[0]=4096.0f/4092.0f;//1.002202104f;
-	imu_offset->acc_scale[1]=4096.0f/4095.0f;//1.001222195f;
-	imu_offset->acc_scale[2]=4096.0f/4117.0f;//0.992007750f;
+	imu_offset->acc_scale[0]=4096.0f/4092.0f;
+	imu_offset->acc_scale[1]=4096.0f/4092.0f;
+	imu_offset->acc_scale[2]=4096.0f/4114.0f;
 
 }
 
