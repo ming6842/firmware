@@ -50,13 +50,13 @@ void PID_rc_pass_command(attitude_t* attitude,attitude_stablizer_pid_t* PID_roll
 void PID_init(attitude_stablizer_pid_t* PID_roll,attitude_stablizer_pid_t* PID_pitch,attitude_stablizer_pid_t* PID_yaw_rate,attitude_stablizer_pid_t* PID_heading,vertical_pid_t* PID_Z,vertical_pid_t* PID_Zd,nav_pid_t* PID_nav){
 
 
-	PID_roll -> kp =0.20f;
-	PID_roll -> kd =0.07f;
+	PID_roll -> kp =0.17f;
+	PID_roll -> kd =0.085f;
 	PID_roll -> ki =0.0;
 	PID_roll -> setpoint =0.0;
 
-	PID_pitch -> kp =0.20f;
-	PID_pitch -> kd =0.07f;
+	PID_pitch -> kp =0.17f;
+	PID_pitch -> kd =0.085f;
 	PID_pitch -> ki =0.0;
 	PID_pitch -> setpoint =0.0;
 

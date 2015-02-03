@@ -11,8 +11,6 @@
 #include "usart.h"
 	uint8_t _buff_push[100];
     
-#define PUSH_PRESC 500
-    uint32_t push_prescaler = PUSH_PRESC;
 #endif
 
 
@@ -139,10 +137,9 @@ void vertical_sense(vertical_data_t* vertical_filtered_data,vertical_data_t* ver
 
 		if (DMA_GetFlagStatus(DMA1_Stream6, DMA_FLAG_TCIF6) != RESET) {
 
-			if((push_prescaler--) == 0){
 			_buff_push[7] = 0;_buff_push[8] = 0;_buff_push[9] = 0;_buff_push[10] = 0;_buff_push[11] = 0;_buff_push[12] = 0;	_buff_push[13] = 0;
 
-			sprintf((char *)_buff_push, "%ld,%ld,%ld,%ld,%ld,%d,100000000000,\r\n",
+			sprintf((char *)_buff_push, "%ld,%ld,%ld,%ld,%ld,%d,\r\n",
 
 				(int32_t)(V_Z_Baro_lp* 1.0f),
 				(int32_t)(vertical_raw_data->Z* 1.0f),
@@ -153,8 +150,6 @@ void vertical_sense(vertical_data_t* vertical_filtered_data,vertical_data_t* ver
 
 			usart2_dma_send(_buff_push);
 
-			push_prescaler = PUSH_PRESC;
-			}
 		}	
 #endif
 }
