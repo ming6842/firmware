@@ -21,6 +21,7 @@ MCU_PERIPH_SRCS =  \
 ACTUATORS_SRCS = $(ACTUATORS)/pwm.c
 
 RADIO_CONTROLLER_SRCS = $(RADIO_CONTROLLER)/radio_control.c \
+	$(RADIO_CONTROLLER)/sbus.c \
 	$(RADIO_CONTROLLER)/pwm_decoder.c
 
 COMMON_SRCS =$(COMMON)/test_common.c \

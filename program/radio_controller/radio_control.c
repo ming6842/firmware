@@ -11,12 +11,14 @@ static radio_controller_t radio_controller = {
 	.throttle_control_input = 0.0f,
 	.yaw_rate_control_input = 0.0f,
 	.safety = ENGINE_ON,
-	.mode = MODE_1
-	
+	.mode = MODE_1,
+	.rcv_status = FRAMELOST,
+	.fs_status = FAILSAFE_NOT_ACTIVE 
+	 
 };
-void update_radio_control_input(radio_controller_t *rc_data)
+uint8_t update_radio_control_input(radio_controller_t *rc_data)
 {
-	get_pwm_decode_value(&radio_controller);
+	uint8_t gotUpdatedFlag = get_pwm_decode_value(&radio_controller);
 	memcpy(rc_data, &radio_controller, sizeof(radio_controller_t));
 
 #ifdef DEBUG_RADIO_CONTROLLER
@@ -36,7 +38,20 @@ void update_radio_control_input(radio_controller_t *rc_data)
 	printf("\r\n");
 	Delay_1us(100);
 #endif	
+
+	return gotUpdatedFlag;
 }
+
+static uint8_t rc_input_source = RC_INPUT_SOURCE_DEFAULT;
+
+
+uint8_t radio_controller_get_current_rc_input_source(void){
+
+	return rc_input_source;
+
+}
+
+
 
 void check_rc_safety_init(radio_controller_t *rc_controller_data)
 {
@@ -44,28 +59,64 @@ void check_rc_safety_init(radio_controller_t *rc_controller_data)
 	uint8_t safe_flag=0;
 	uint32_t count_to_byebye = 0;
 	uint32_t safe_count = 0;
+
+	/* initialize SBUS if selected */
+
+	if(radio_controller_get_current_rc_input_source() == RC_INPUT_SOURCE_SBUS){
+
+		enable_sbus_usart6();
+
+	}
+
 	while(safe_flag==0){
 
-		count_to_byebye = 10000;
-		safe_count = 0;
+		if(radio_controller_get_current_rc_input_source() == RC_INPUT_SOURCE_PWM_INC){
+			count_to_byebye = 10000;
+			safe_count = 0;
 
-		while(count_to_byebye--){
-			update_radio_control_input(rc_controller_data);
-			if(((rc_controller_data->throttle_control_input)<5.0f)&&((rc_controller_data -> safety) == ENGINE_OFF)){
+			while(count_to_byebye--){
+				update_radio_control_input(rc_controller_data);
+				if(((rc_controller_data->throttle_control_input)<5.0f)&&((rc_controller_data -> safety) == ENGINE_OFF)){
 
-				safe_count++;
+					safe_count++;
 
-			}else{
+				}else{
+
+				}
+
+			}
+			LED_TOGGLE(LED1);
+
+			if(safe_count >= (10000-500)){
+				safe_flag = 1;
+				LED_OFF(LED1);
+			}
+
+		}else if(radio_controller_get_current_rc_input_source() == RC_INPUT_SOURCE_SBUS){
+
+
+			if(update_radio_control_input(rc_controller_data)){
+
+				if(((rc_controller_data->throttle_control_input)<5.0f)&&((rc_controller_data -> safety) == ENGINE_OFF)&&(rc_controller_data->rcv_status == FRAME_RECEIVED) && (rc_controller_data-> fs_status == FAILSAFE_NOT_ACTIVE)){
+
+
+					safe_flag = 1;
+					LED_OFF(LED1);
+				}
 
 			}
 
-		}
-		LED_TOGGLE(LED1);
+			if(!safe_flag){
 
-		if(safe_count >= (10000-500)){
-			safe_flag = 1;
-			LED_OFF(LED1);
+
+				count_to_byebye = 100000;
+				while(count_to_byebye--);
+					LED_TOGGLE(LED1);
+			}
+
 		}
+
+
 
 	}
 
