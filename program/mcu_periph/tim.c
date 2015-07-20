@@ -378,6 +378,7 @@ void enable_tim12()
 }
 void pwm_input_output_init()
 {
+#ifdef configBOARD_VERTIGO_V20
 	enable_tim1();
 	enable_tim2();
 	enable_tim3();
@@ -385,4 +386,14 @@ void pwm_input_output_init()
 	enable_tim5();
 	enable_tim9();
 	enable_tim12();
+#endif
+#ifdef configBOARD_VERTIGO_V21
+	enable_tim1();
+	enable_tim2();
+	// enable_tim3();
+	enable_tim4();
+	enable_tim5();
+	enable_tim9();
+	enable_tim12();
+#endif
 }
