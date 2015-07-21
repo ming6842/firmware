@@ -25,18 +25,18 @@ extern xQueueHandle gps_serial_queue;
 void lea6h_set_USART_IT(void){
 
 
-	USART_ITConfig(UART4, USART_IT_TXE, DISABLE);
-	USART_ITConfig(UART4, USART_IT_RXNE, ENABLE);
+	USART_ITConfig(LEA6H_UART, USART_IT_TXE, DISABLE);
+	USART_ITConfig(LEA6H_UART, USART_IT_RXNE, ENABLE);
 
 	NVIC_InitTypeDef NVIC_InitStruct = {
-		.NVIC_IRQChannel = UART4_IRQn,
+		.NVIC_IRQChannel = LEA6H_IRQn,
 		.NVIC_IRQChannelPreemptionPriority =  configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+1,
 		.NVIC_IRQChannelSubPriority = 0,
 		.NVIC_IRQChannelCmd = ENABLE
 	};
 	NVIC_Init(&NVIC_InitStruct);
 }
-char uart4_read(void)
+static char gps_uart_queue_read(void)
 {
 	serial_msg msg;
 
@@ -45,7 +45,7 @@ char uart4_read(void)
 	return msg.ch;
 }
 
-void UART4_IRQHandler(void)
+void LEA6H_UART_IRQHandler(void)
 {
 
 	long lHigherPriorityTaskWoken = pdFALSE;
@@ -53,14 +53,14 @@ void UART4_IRQHandler(void)
 	serial_msg rx_msg;
 
 
-	if (USART_GetITStatus(UART4, USART_IT_RXNE) != RESET) {
-		rx_msg.ch = USART_ReceiveData(UART4);
+	if (USART_GetITStatus(LEA6H_UART, USART_IT_RXNE) != RESET) {
+		rx_msg.ch = USART_ReceiveData(LEA6H_UART);
 
 		if (!xQueueSendToBackFromISR(gps_serial_queue, &rx_msg, &lHigherPriorityTaskWoken))
 			portEND_SWITCHING_ISR(lHigherPriorityTaskWoken);
 
 	}
-
+ 
 	portEND_SWITCHING_ISR(lHigherPriorityTaskWoken);
 
 }
@@ -68,7 +68,7 @@ void ubx_package_parser()
 {
 	uint16_t i=0;
 	uint8_t c;
-	c = uart4_read();
+	c = gps_uart_queue_read();
 	if((c == 0xB5)&&(capturingFlag==0)&&(bufferFullFlag==0)){
 	capturingFlag=1;
 	dataIndex=0;	
