@@ -8,9 +8,18 @@
 
 #define GPS_BUFFER_SIZE 500
 
-#define LEA6H_UART UART7
-#define LEA6H_UART_IRQHandler UART7_IRQHandler
-#define LEA6H_IRQn UART7_IRQn 
+#ifdef configBOARD_VERTIGO_V21
+
+	#define LEA6H_UART UART7
+	#define LEA6H_UART_IRQHandler UART7_IRQHandler
+	#define LEA6H_IRQn UART7_IRQn 
+#endif
+#ifdef configBOARD_VERTIGO_V20
+
+	#define LEA6H_UART UART4
+	#define LEA6H_UART_IRQHandler UART4_IRQHandler
+	#define LEA6H_IRQn UART4_IRQn 
+#endif
 
 typedef struct UBXvelned_t{
 		

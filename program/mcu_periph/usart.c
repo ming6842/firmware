@@ -273,7 +273,9 @@ void usart_init()
 	enable_usart3();
 	enable_usart4();
 	enable_usart5();
+#ifdef configBOARD_VERTIGO_V21
     enable_usart7();
+#endif
 	enable_usart8();
 }
 
